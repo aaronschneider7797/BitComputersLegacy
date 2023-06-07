@@ -252,8 +252,8 @@ public class Cpu implements InstructionTable {
 			clearCarryFlag();
 			break;
 		case 0x20: // JSR - Jump to Subroutine - Absolute
-		case 0x22: // JSR - Jump to Subroutine - Absolute
-		case 0x23: // JSR - Jump to Subroutine - Absolute
+		case 0x22: // JSR - Jump to Subroutine - Absolute Indirect
+		case 0x23: // JSR - Jump to Subroutine - Absolute X-Indexed Indirect
 			stackPush((state.pc - 1 >> 8) & 0xff); // PC high byte
 			stackPush(state.pc - 1 & 0xff); // PC low byte
 			state.pc = Utils.address(state.args[0], state.args[1]);
