@@ -1103,7 +1103,7 @@ public class Cpu implements InstructionTable {
 	}
 
 	private int asw(int m) {
-		int data = (m & 0xffff) | (((m & 0xffff) + 1) << 8);
+		int data = readWord(m);
 		setCarryFlag((data & 0x8000) != 0);
 		return (m << 1) & 0xff;
 	}
@@ -1140,7 +1140,7 @@ public class Cpu implements InstructionTable {
 	}
 
 	private int row(int m) {
-		int result = (((m & 0xffff) | ((m & 0xffff) + 1) << 8) << 1) | getCarryBit();
+		int result = (readWord(m) << 1) | getCarryBit();
 		setCarryFlag((result & 0x10000) != 0);
 		return result;
 	}
@@ -1581,7 +1581,7 @@ public class Cpu implements InstructionTable {
 
 	int relAddress16(int offset) {
 		// Cast the offset to a signed byte to handle negative offsets
-		int newpc = 1 + ((state.pc + (byte) offset) & 0xffff) | ((((state.pc + (byte) offset) & 0xffff) + 1) << 8);
+		int newpc = 1 + readWord(state.pc + (byte) offset);
 		this.cycles -= 3;
 		return newpc;
 	}
@@ -1591,6 +1591,10 @@ public class Cpu implements InstructionTable {
 	 */
 	int zpyAddress(int zp) {
 		return (zp + state.y) & 0xff;
+	}
+
+	int readWord(int m) {
+		return (m & 0xffff) | (((m & 0xffff) + 1) << 8);
 	}
 
 	/**
