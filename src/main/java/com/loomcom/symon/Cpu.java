@@ -985,7 +985,7 @@ public class Cpu implements InstructionTable {
 		stackPush(state.getStatusFlag());
 		// Set the Interrupt Disabled flag.  RTI will clear it.
 		setIrqDisableFlag();
-		// The 65C02 clears the Decimal flag on interrupts.
+		// The 65CE02 clears the Decimal flag on interrupts.
 		clearDecimalModeFlag();
 
 		// Load interrupt vector address into PC
@@ -1524,7 +1524,7 @@ public class Cpu implements InstructionTable {
 	/**
 	 * Push an item onto the stack, and decrement the stack counter.
 	 * Will wrap-around if already at the bottom of the stack (This
-	 * is the same behavior as the real 65C02)
+	 * is the same behavior as the real 65CE02)
 	 */
 	void stackPush(int data) {
 		bus.write(0x100 + state.sp, data);
@@ -1539,7 +1539,7 @@ public class Cpu implements InstructionTable {
 	/**
 	 * Pre-increment the stack pointer, and return the top of the stack.
 	 * Will wrap-around if already at the top of the stack (This
-	 * is the same behavior as the real 65C02)
+	 * is the same behavior as the real 65CE02)
 	 */
 	int stackPop() {
 		if (state.sp == 0xff) {

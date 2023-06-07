@@ -63,7 +63,7 @@ public class ThistleMachine {
 
 	// EEPROM data+code at $EF00-$FFFF
 	private static final int EEPROM_DATA_BASE = 0xEF00;
-	//private static final int EEPROM_CODE_BASE = 0xF000;
+	private static final int EEPROM_CODE_BASE = 0xF000;
 
 	// The simulated peripherals
 	private final Bus bus;

@@ -67,7 +67,7 @@ public interface InstructionTable {
 		}
 	}
 
-	// 65C02 opcodes.
+	// 65CE02 opcodes.
 
 	/**
 	 * Instruction opcode names.

@@ -11,6 +11,8 @@
   "credits": "Seth J. Morabito for creating Symon",
   "logoFile": "",
   "screenshots": [],
-  "dependencies": []
+  "dependencies": [
+    "opencomputers"
+  ]
 }
 ]
