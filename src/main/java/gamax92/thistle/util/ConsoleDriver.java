@@ -17,14 +17,14 @@ import net.minecraft.nbt.NBTTagCompound;
  */
 public class ConsoleDriver {
 
-	private Machine machine;
+	private final Machine machine;
 
 	private String gpuADDR;
 	private String screenADDR;
 
 	private boolean canWrite = false;
 
-	private LinkedList<Integer> databuf = new LinkedList<Integer>();
+	private final LinkedList<Integer> databuf = new LinkedList<>();
 
 	private int X = 1;
 	private int Y = 1;
@@ -34,7 +34,7 @@ public class ConsoleDriver {
 	// Parser Variables {
 	private boolean parseANSI = false;
 	private boolean ansiDetect = false;
-	private StringBuffer ansiCode = new StringBuffer();
+	private final StringBuffer ansiCode = new StringBuffer();
 	// }
 
 	// Command Runtime Variables {
@@ -47,14 +47,14 @@ public class ConsoleDriver {
 	private boolean showCursor = true;
 	// }
 
-	// This actually means 'is setup still *ongoing* right now'.
+	// This actually means 'is set up still *ongoing* right now'.
 	private boolean setup = true;
 	private long lastTime = System.currentTimeMillis();
 	private int cursorFG;
 	private int cursorBG;
 	private char cursorChar;
 
-	private double[] colors = {
+	private final double[] colors = {
 		0x000000,0xFF3333,0x336600,0x663300,0x333399,0x9933CC,0x336699,0xCCCCCC,
 		0x333333,0xFF6699,0x33CC33,0xFFFF33,0x6699FF,0xCC66CC,0xFFCC33,0xFFFFFF
 	};
@@ -90,7 +90,7 @@ public class ConsoleDriver {
 			}
 			if (gpuADDR != null && screenADDR != null) {
 				canWrite = true;
-				// Attempt to setup the GPU
+				// Attempt to set up the GPU
 				for (int i = -6; i <= -1; i++)
 					databuf.addFirst(i);
 				setup = true;
@@ -345,7 +345,7 @@ public class ConsoleDriver {
 				}
 			} else {
 				// It shouldn't be possible to have a valid ANSI code above 256 characters,
-				//  even if you account for the window title extensions and etc.,
+				//  even if you account for the window title extensions etc.,
 				//  so it's probably either someone trying to eat all server memory,
 				//  or an accident
 				if (ansiCode.length() < 256)
@@ -381,7 +381,7 @@ public class ConsoleDriver {
 					// This is the length of the command (used after it has finished)
 					int cmdLen = 1;
 					// Commands that should be executed immediately after must be added here.
-					LinkedList<Integer> chained = new LinkedList<Integer>();
+					LinkedList<Integer> chained = new LinkedList<>();
 
 					if ((character < -1004 || character > -1000) && cursor) {
 						// When performing any operation that isn't one of the 4 cursor toggle operations, temporarily hide the cursor.

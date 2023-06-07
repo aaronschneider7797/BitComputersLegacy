@@ -1,25 +1,18 @@
 package gamax92.thistle.util;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.UUID;
-import java.util.regex.Pattern;
-
-import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.lang3.ArrayUtils;
-
 import com.google.common.base.Charsets;
-
 import gamax92.thistle.Thistle;
 import li.cil.oc.api.machine.Context;
 import li.cil.oc.api.machine.Value;
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.lang3.ArrayUtils;
+
+import java.util.*;
+import java.util.regex.Pattern;
 
 public class TSFHelper {
 
-	private static Pattern uuidtest = Pattern.compile("^([0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12})$");
+	private static final Pattern uuidtest = Pattern.compile("^([0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12})$");
 
 	private static int b(Queue<Byte> buffer) {
 		return buffer.remove() & 0xFF;
@@ -34,18 +27,15 @@ public class TSFHelper {
 	}
 
 	private static short readShort(Queue<Byte> buffer) {
-		short value = (short) (b(buffer) | (b(buffer) << 8));
-		return value;
+		return (short) (b(buffer) | (b(buffer) << 8));
 	}
 
 	private static int readInt(Queue<Byte> buffer) {
-		int value = b(buffer) | (b(buffer) << 8) | (b(buffer) << 16) | (b(buffer) << 24);
-		return value;
+		return b(buffer) | (b(buffer) << 8) | (b(buffer) << 16) | (b(buffer) << 24);
 	}
 
 	private static long readLong(Queue<Byte> buffer) {
-		long value = b(buffer) | (b(buffer) << 8) | (b(buffer) << 16) | (b(buffer) << 24) | (b(buffer) << 32) | (b(buffer) << 40) | (b(buffer) << 48) | (b(buffer) << 56);
-		return value;
+		return b(buffer) | ((long) b(buffer) << 8) | ((long) b(buffer) << 16) | ((long) b(buffer) << 24) | ((long) b(buffer) << 32) | ((long) b(buffer) << 40) | ((long) b(buffer) << 48) | ((long) b(buffer) << 56);
 	}
 
 	private static double readDouble(Queue<Byte> buffer) {
@@ -78,22 +68,27 @@ public class TSFHelper {
 		return UUID.fromString(address.toString());
 	}
 
-	private static Map readArrayMap(Queue<Byte> buffer, Context context, int conversion) {
-		Map arrayMap = new HashMap();
+	private static Map<Integer, Object> readArrayMap(Queue<Byte> buffer, Context context, int conversion) {
+		Map<Integer, Object> arrayMap = new HashMap<>();
 		Object[] pairs = readArray(buffer, context, conversion);
-		for (int i = 0; i < pairs.length; i++) {
-			arrayMap.put(i, pairs[i]);
+		if (pairs != null) {
+			for (int i = 0; i < pairs.length; i++) {
+				arrayMap.put(i, pairs[i]);
+			}
 		}
 		return arrayMap;
 	}
 
-	private static Map readMap(Queue<Byte> buffer, Context context, int conversion) {
-		Map map = new HashMap();
+	private static Map<Object, Object> readMap(Queue<Byte> buffer, Context context, int conversion) {
+		Map<Object, Object> map = new HashMap<>();
 		Object[] pairs = readArray(buffer, context, conversion);
-		if ((pairs.length % 2) == 1)
+		if (pairs != null && (pairs.length % 2) == 1) {
 			throw new IllegalArgumentException("key with no value");
-		for (int i = 0; i < pairs.length; i += 2) {
-			map.put(pairs[i], pairs[i+1]);
+		}
+		if (pairs != null) {
+			for (int i = 0; i < pairs.length; i += 2) {
+				map.put(pairs[i], pairs[i+1]);
+			}
 		}
 		return map;
 	}
@@ -111,7 +106,7 @@ public class TSFHelper {
 	}
 
 	public static Object[] readArray(Queue<Byte> buffer, Context context, int conversion) {
-		List<Object> output = new ArrayList<Object>();
+		List<Object> output = new ArrayList<>();
 		try {
 			while (true) {
 				int tag = buffer.remove() & 0xFF;
@@ -165,7 +160,7 @@ public class TSFHelper {
 					throw new IllegalArgumentException(String.format("Invalid tag %04X", tag));
 				}
 			}
-		} catch (Exception e) {
+		} catch (Exception ignored) {
 		}
 		return null;
 	}
@@ -182,7 +177,7 @@ public class TSFHelper {
 		if (((conversion & 8) != 0) && thing instanceof String && uuidtest.matcher((String) thing).matches())
 			thing = UUID.fromString((String) thing);
 		if ((conversion & 4) != 0 && (thing instanceof Byte || thing instanceof Short))
-			thing = Integer.valueOf(((Number) thing).intValue());
+			thing = ((Number) thing).intValue();
 		if (thing == null)
 			writeNull(buffer);
 		else if (thing instanceof Boolean)
@@ -216,11 +211,11 @@ public class TSFHelper {
 			writeArray(buffer, (Object[]) thing, context, conversion);
 			writeEnd(buffer);
 		} else if (thing instanceof Map)
-			writeMap(buffer, (Map) thing, context, conversion);
+			writeMap(buffer, (Map<?, ?>) thing, context, conversion);
 		else if (thing instanceof Value)
 			writeValue(buffer, (Value) thing, context);
 		else
-			Thistle.log.warn("Don't know how to TSF encode a " + thing.toString() + " (" + thing.getClass().getName() + "), please report this to Thistle's author.");
+			Thistle.log.warn("Don't know how to TSF encode a " + thing + " (" + thing.getClass().getName() + "), please report this to Thistle's author.");
 	}
 
 	public static void writeEnd(Queue<Byte> buffer) {
@@ -300,7 +295,7 @@ public class TSFHelper {
 	}
 
 	public static void writeString(Queue<Byte> buffer, String str) {
-		byte data[] = str.getBytes(Charsets.UTF_8);
+		byte[] data = str.getBytes(Charsets.UTF_8);
 		int length = Math.min(data.length, 0xFFFF);
 		buffer.add((byte) 10);
 		buffer.add((byte) (length & 0xFF));
@@ -312,21 +307,20 @@ public class TSFHelper {
 
 	public static void writeUUID(Queue<Byte> buffer, UUID uuid) {
 		buffer.add((byte) 11);
-		byte data[] = UUIDHelper.encodeUUID(uuid.toString());
-		for (int i = 0; i < data.length; i++)
-			buffer.add(data[i]);
+		byte[] data = UUIDHelper.encodeUUID(uuid.toString());
+		for (byte datum : data) buffer.add(datum);
 	}
 
 	public static void writeMap(Queue<Byte> buffer, Map<?,?> map, Context context, int conversion) {
 		buffer.add((byte) 13);
-		for (Map.Entry entry : map.entrySet()) {
+		for (Map.Entry<?, ?> entry : map.entrySet()) {
 			writeThing(buffer, entry.getKey(), context, conversion);
 			writeThing(buffer, entry.getValue(), context, conversion);
 		}
 		writeEnd(buffer);
 	}
 
-	public static void writeMap(Queue<Byte> buffer, Map map, Context context) {
+	public static void writeMap(Queue<Byte> buffer, Map<?, ?> map, Context context) {
 		writeMap(buffer, map, context, 0);
 	}
 
@@ -341,8 +335,8 @@ public class TSFHelper {
 	}
 
 	public static void writeArray(Queue<Byte> buffer, Object[] input, Context context, int conversion) {
-		for (int i = 0; i < input.length; i++) {
-			writeThing(buffer, input[i], context, conversion);
+		for (Object o : input) {
+			writeThing(buffer, o, context, conversion);
 		}
 	}
 

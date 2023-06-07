@@ -7,7 +7,7 @@ import org.apache.logging.log4j.message.SimpleMessage;
 
 public class LogMessage implements MessageFactory {
 
-	private String prefix;
+	private final String prefix;
 
 	public LogMessage(String prefix) {
 		this.prefix = prefix;

@@ -23,9 +23,9 @@ import net.minecraft.nbt.NBTTagCompound;
 public class GeneralIO extends Device {
 
 	private Context context;
-	private EvictingQueue<Byte> inputbuf = EvictingQueue.create(255);
-	private LinkedList<byte[]> signalbuf = new LinkedList<byte[]>();
-	private Queue<Byte> queuebuf = new LinkedList<Byte>();
+	private final EvictingQueue<Byte> inputbuf = EvictingQueue.create(255);
+	private final LinkedList<byte[]> signalbuf = new LinkedList<>();
+	private final Queue<Byte> queuebuf = new LinkedList<>();
 	private int signalpos = 0;
 	private int queuestat = 0;
 	private int irqmask = 0;
@@ -34,7 +34,7 @@ public class GeneralIO extends Device {
 	private ConsoleDriver console;
 	private byte[] utf8buf = new byte[6]; // length, pos, b1, b2, b3, b4
 
-	private static Pattern uuidtest = Pattern.compile("^([0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12})$");
+	private static final Pattern uuidtest = Pattern.compile("^([0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12})$");
 
 	static final int GIO_INPUTCHK_REG = 0;
 	static final int GIO_INPUT_REG = 1;
@@ -55,8 +55,7 @@ public class GeneralIO extends Device {
 		if (utf8buf[0] > 0) {
 			for (int i = 0; i < utf8buf[1]; i++)
 				console.write(utf8buf[i+2] & 0xFF);
-			for (int i = 0; i < utf8buf.length; i++)
-				utf8buf[i]=0;
+			Arrays.fill(utf8buf, (byte) 0);
 		}
 		utf8buf[0]=(byte) len;
 		utf8buf[2]=(byte) data;
@@ -122,8 +121,7 @@ public class GeneralIO extends Device {
 						for (int i=1; i<=(utf8buf[0]); i++)
 							unicode += (utf8buf[i+2] & 0x3F) << (6*(utf8buf[0]-i));
 						console.write(unicode);
-						for (int i = 0; i < utf8buf.length; i++)
-							utf8buf[i]=0;
+						Arrays.fill(utf8buf, (byte) 0);
 					}
 				}
 			} else if (data >= 192 && data < 224) { // 2 byte
@@ -260,7 +258,7 @@ public class GeneralIO extends Device {
 			}
 		}
 		if (signalbuf.size() < 255) {
-			Queue<Byte> signaldata = new LinkedList<Byte>();
+			Queue<Byte> signaldata = new LinkedList<>();
 			TSFHelper.writeString(signaldata, name);
 			TSFHelper.writeArray(signaldata, args, context, 0x08);
 			signalbuf.add(ArrayUtils.toPrimitive(signaldata.toArray(new Byte[0])));

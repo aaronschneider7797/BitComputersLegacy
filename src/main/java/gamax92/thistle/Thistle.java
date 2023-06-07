@@ -2,34 +2,34 @@ package gamax92.thistle;
 
 import java.io.IOException;
 import java.io.InputStream;
+
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import gamax92.thistle.util.LogMessage;
 import li.cil.oc.Settings;
 import li.cil.oc.api.Items;
 import li.cil.oc.api.Machine;
 import net.minecraftforge.common.config.Configuration;
 
-@Mod(modid = Thistle.MODID, name = Thistle.NAME, version = Thistle.VERSION, dependencies = "required-after:OpenComputers@[1.7.0,)")
+@Mod(modid = Thistle.MODID, name = Thistle.NAME, version = Thistle.VERSION, dependencies = "required-after:OpenComputers@[1.7.5,)")
 public class Thistle {
 	public static final String MODID = "thistle";
 	public static final String NAME = "Thistle Computer";
-	public static final String VERSION = "1.1.1";
-
-	@Mod.Instance
-	public static Thistle instance;
+	public static final String VERSION = "1.2.0";
 
 	public static Logger log;
+
+	@SuppressWarnings("FieldCanBeLocal")
 	private Configuration config;
 
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
-		log = LogManager.getLogger(this.MODID, new LogMessage("Thistle"));
+		log = LogManager.getLogger(MODID, new LogMessage("Thistle"));
 		config = new Configuration(event.getSuggestedConfigurationFile());
 
 		ThistleConfig.loadConfig(config);

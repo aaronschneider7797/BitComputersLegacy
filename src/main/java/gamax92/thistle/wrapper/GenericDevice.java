@@ -26,9 +26,9 @@ import li.cil.oc.api.network.Component;
 
 public class GenericDevice extends ThistleWrapper {
 
-	private Queue<Byte> inputbuf = new LinkedList<Byte>();
-	private Queue<Byte> outputbuf = new LinkedList<Byte>();
-	private byte[] uuid = new byte[16];
+	private final Queue<Byte> inputbuf = new LinkedList<>();
+	private final Queue<Byte> outputbuf = new LinkedList<>();
+	private byte[] uuid;
 	private String name;
 	private int status = 0;
 	private int flag = 0x20;

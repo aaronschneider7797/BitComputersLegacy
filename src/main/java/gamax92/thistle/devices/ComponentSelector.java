@@ -32,9 +32,9 @@ public class ComponentSelector extends Device {
 	private boolean fSpecific = false;
 	private int bankMask = 0x07; // 00111b
 
-	private Queue<Byte> inputbuf = new LinkedList<Byte>();
-	private Queue<Byte> outputbuf = new LinkedList<Byte>();
-	private IThistleDevice[] components = new IThistleDevice[64];
+	private final Queue<Byte> inputbuf = new LinkedList<>();
+	private final Queue<Byte> outputbuf = new LinkedList<>();
+	private final IThistleDevice[] components = new IThistleDevice[64];
 
 	private NBTTagCompound[] delayConnectNBT;
 
@@ -91,7 +91,7 @@ public class ComponentSelector extends Device {
 
 	private boolean mapComponent(String address, int select, boolean specific) {
 		Node node = machine.node().network().node(address);
-		if (node == null || !(node instanceof Component))
+		if (!(node instanceof Component))
 			return false;
 		Environment host = node.host();
 		if (!specific) {
@@ -118,6 +118,7 @@ public class ComponentSelector extends Device {
 
 	@Override
 	public int read(int address) {
+		int memavail;
 		switch (address) {
 		case COMPSEL_STATCMD_REG:
 			return status;
@@ -129,7 +130,7 @@ public class ComponentSelector extends Device {
 		case COMPSEL_FLAG_REG:
 			return fSpecific ? 1 : 0;
 		case COMPSEL_MEM_REG_L:
-			int memavail = Math.min(this.getBus().getMachine().getMemsize() / 0x1000, 0xFFFF);
+			memavail = Math.min(this.getBus().getMachine().getMemsize() / 0x1000, 0xFFFF);
 			return memavail & 0xFF;
 		case COMPSEL_MEM_REG_H:
 			memavail = Math.min(this.getBus().getMachine().getMemsize() / 0x1000, 0xFFFF);
@@ -143,6 +144,7 @@ public class ComponentSelector extends Device {
 
 	@Override
 	public void write(int address, int data) {
+		Object tsfdata;
 		switch (address) {
 		case COMPSEL_STATCMD_REG:
 			info = 0;
@@ -150,7 +152,7 @@ public class ComponentSelector extends Device {
 			switch (data) {
 			case 0: // map
 				status = 1;
-				Object tsfdata = parseTSF(inputbuf, false);
+				tsfdata = parseTSF(inputbuf, false);
 				if (tsfdata == null || tsfdata instanceof Integer) {
 					status = 2;
 				} else if (tsfdata instanceof String) {

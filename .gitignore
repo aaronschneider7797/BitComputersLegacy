@@ -9,4 +9,7 @@
 /eclipse
 /build
 /lib
+/.idea
+/.roms/boot.o
+/.roms/boot.map
 

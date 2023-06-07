@@ -5,7 +5,7 @@ import net.minecraft.nbt.NBTTagCompound;
 
 public abstract class ThistleWrapper implements IThistleDevice {
 
-	private Environment host;
+	private final Environment host;
 
 	public ThistleWrapper(Environment host) {
 		this.host = host;

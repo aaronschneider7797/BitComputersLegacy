@@ -9,9 +9,9 @@ import li.cil.oc.api.machine.Context;
 public class CallSynchronizedException extends RuntimeException {
 
 	private Cleanup cleanup;
-	private Object thing;
-	private String method;
-	private Object[] args;
+	private final Object thing;
+	private final String method;
+	private final Object[] args;
 
 	public CallSynchronizedException(Object thing, String method, Object[] args) {
 		super();
@@ -41,10 +41,10 @@ public class CallSynchronizedException extends RuntimeException {
 	}
 
 	public abstract static class Cleanup {
-		public void run(Object[] results, Context context) {};
+		public void run(Object[] results, Context context) {}
 
-		public void error(Exception error) {};
+		public void error(Exception error) {}
 
-		public void finish() {};
+		public void finish() {}
 	}
 }

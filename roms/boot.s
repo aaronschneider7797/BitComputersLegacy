@@ -1,7 +1,7 @@
 ;
 ; Thistle Boot ROM
 ;
-	.setcpu		"65c02"
+.setcpu		"65c02"
 
 .segment	"STARTUP"
 

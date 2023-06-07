@@ -13,19 +13,14 @@ import net.minecraft.nbt.NBTTagCompound;
 
 public class ValueManager {
 
-	private static Map<Context, BiMap<Integer, Value>> valuestore = new HashMap();
+	private static final Map<Context, BiMap<Integer, Value>> valuestore = new HashMap<>();
 
 	private static BiMap<Integer, Value> getValueMap(Context context) {
-		BiMap<Integer, Value> valuemap = valuestore.get(context);
-		if (valuemap == null) {
-			valuemap = HashBiMap.create();
-			valuestore.put(context, valuemap);
-		}
-		return valuemap;
+		return valuestore.computeIfAbsent(context, k -> HashBiMap.create());
 	}
 
 	private static void addValue(BiMap<Integer, Value> valuemap, Value value) {
-		Integer id = value.hashCode();
+		int id = value.hashCode();
 		while (valuemap.containsKey(id))
 			id = (int) ((Math.random()*2-1) * -((double) Integer.MIN_VALUE));
 		valuemap.put(id, value);
@@ -63,7 +58,7 @@ public class ValueManager {
 		int length = nbt.getInteger("length");
 		for (int i = 0; i < length; i++) {
 			try {
-				Class clazz = Class.forName(nbt.getString("class" + i));
+				Class<?> clazz = Class.forName(nbt.getString("class" + i));
 				Value value = (Value) clazz.newInstance();
 				value.load(nbt.getCompoundTag("nbt" + i));
 				valuemap.put(nbt.getInteger("id" + i), value);

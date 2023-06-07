@@ -42,7 +42,7 @@ public abstract class Device implements Comparable<Device> {
 	/**
 	 * The memory range for this device.
 	 */
-	private MemoryRange memoryRange;
+	private final MemoryRange memoryRange;
 
 	/**
 	 * The name of the device.

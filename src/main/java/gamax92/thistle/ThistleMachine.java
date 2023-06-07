@@ -63,7 +63,7 @@ public class ThistleMachine {
 
 	// EEPROM data+code at $EF00-$FFFF
 	private static final int EEPROM_DATA_BASE = 0xEF00;
-	private static final int EEPROM_CODE_BASE = 0xF000;
+	//private static final int EEPROM_CODE_BASE = 0xF000;
 
 	// The simulated peripherals
 	private final Bus bus;
@@ -75,12 +75,12 @@ public class ThistleMachine {
 	private final ComputerInfo compinfo;
 	private final RTC rtc;
 	private final BootROM eeprom;
-	private Context context;
+	private final Context context;
 
 	// The machine memory
-	private ArrayList<Byte> mem = new ArrayList<Byte>();
+	private final ArrayList<Byte> mem = new ArrayList<>();
 
-	public ThistleMachine(Context context) throws Exception {
+	public ThistleMachine(Context context) {
 		this.context = context;
 		this.bus = new Bus();
 		this.cpu = new Cpu();

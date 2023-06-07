@@ -12,6 +12,11 @@ public class CpuState {
 	public int a;
 
 	/**
+	 * Base Page
+	 */
+	public int b;
+
+	/**
 	 * X index regsiter
 	 */
 	public int x;
@@ -20,6 +25,11 @@ public class CpuState {
 	 * Y index register
 	 */
 	public int y;
+
+	/**
+	 * Z index register
+	 */
+	public int z;
 
 	/**
 	 * Stack Pointer
@@ -54,6 +64,7 @@ public class CpuState {
 	public boolean decimalModeFlag;
 	public boolean breakFlag;
 	public boolean overflowFlag;
+	public boolean extendFlag;
 
 	// Processor lockup
 	public boolean dead = false;

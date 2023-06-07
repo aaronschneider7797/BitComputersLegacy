@@ -9,7 +9,7 @@ public class WrapperRegistry {
 
 	private static final WrapperRegistry INSTANCE = new WrapperRegistry();
 
-	private Map<Class<? extends Environment>, Class<? extends ThistleWrapper>> registry = new HashMap<Class<? extends Environment>, Class<? extends ThistleWrapper>>();
+	private final Map<Class<? extends Environment>, Class<? extends ThistleWrapper>> registry = new HashMap<>();
 
 	public static WrapperRegistry instance() {
 		return INSTANCE;

@@ -6,12 +6,12 @@ import java.io.IOException;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import net.minecraftforge.common.MinecraftForge;
 import org.apache.commons.io.IOUtils;
 
 import com.loomcom.symon.Cpu;
 import com.loomcom.symon.CpuState;
 
-import cpw.mods.fml.common.FMLCommonHandler;
 import gamax92.thistle.devices.BankSelector;
 import gamax92.thistle.exceptions.CallSynchronizedException;
 import gamax92.thistle.exceptions.CallSynchronizedException.Cleanup;
@@ -36,7 +36,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import scala.Option;
 
-@Architecture.Name("65C02 Thistle")
+@Architecture.Name("65CE02 Thistle")
 public class ThistleArchitecture implements Architecture {
 	private final Machine machine;
 
@@ -94,7 +94,7 @@ public class ThistleArchitecture implements Architecture {
 		}
 		try {
 			PacketSender.sendSound(machine.host().world(), machine.host().xPosition(), machine.host().yPosition(), machine.host().zPosition(), ".");
-		} catch (Throwable e) {
+		} catch (Throwable ignored) {
 		}
 		initialized = true;
 		return true;
@@ -104,7 +104,7 @@ public class ThistleArchitecture implements Architecture {
 	public void close() {
 		ValueManager.removeAll(this.machine);
 		if (vm != null) {
-			FMLCommonHandler.instance().bus().unregister(vm.machine);
+			MinecraftForge.EVENT_BUS.unregister(vm.machine);
 			vm = null;
 		}
 	}
@@ -114,7 +114,7 @@ public class ThistleArchitecture implements Architecture {
 		try {
 			if (!isSynchronizedReturn) {
 				// Since our machine is a memory mapped one, parse signals here
-				Signal signal = null;
+				Signal signal;
 				while (true) {
 					signal = machine.popSignal();
 					if (signal != null) {
@@ -259,7 +259,7 @@ public class ThistleArchitecture implements Architecture {
 		// Persist Machine
 
 		// Persist Memory
-		byte mem[] = new byte[vm.machine.getMemsize()];
+		byte[] mem = new byte[vm.machine.getMemsize()];
 		for (int i = 0; i < mem.length; i++)
 			mem[i] = vm.machine.readMem(i);
 		try {
