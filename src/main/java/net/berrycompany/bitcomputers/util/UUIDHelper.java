@@ -1,4 +1,4 @@
-package gamax92.thistle.util;
+package net.berrycompany.bitcomputers.util;
 
 import java.util.UUID;
 import java.util.regex.Pattern;

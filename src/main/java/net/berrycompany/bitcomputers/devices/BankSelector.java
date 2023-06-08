@@ -1,4 +1,4 @@
-package gamax92.thistle.devices;
+package net.berrycompany.bitcomputers.devices;
 
 import com.loomcom.symon.devices.Device;
 import net.minecraft.nbt.NBTTagCompound;

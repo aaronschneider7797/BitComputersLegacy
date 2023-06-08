@@ -1,8 +1,8 @@
-package gamax92.thistle;
+package net.berrycompany.bitcomputers;
 
 import net.minecraftforge.common.config.Configuration;
 
-public class ThistleConfig {
+public class BitComputersConfig {
 
 	public static int clocksPerTick = 15000;
 

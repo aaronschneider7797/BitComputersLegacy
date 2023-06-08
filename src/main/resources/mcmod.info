@@ -1,7 +1,7 @@
 [
 {
-  "modid": "thistle",
-  "name": "Thistle Computer",
+  "modid": "bitcomputers",
+  "name": "BitComputers",
   "description": "65CE02 Architecture for OpenComputers.",
   "version": "${version}",
   "mcversion": "${mcversion}",

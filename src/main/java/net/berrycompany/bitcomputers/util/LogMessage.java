@@ -1,4 +1,4 @@
-package gamax92.thistle.util;
+package net.berrycompany.bitcomputers.util;
 
 import org.apache.logging.log4j.message.Message;
 import org.apache.logging.log4j.message.MessageFactory;

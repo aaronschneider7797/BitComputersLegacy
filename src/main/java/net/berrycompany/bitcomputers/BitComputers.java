@@ -1,4 +1,4 @@
-package gamax92.thistle;
+package net.berrycompany.bitcomputers;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,16 +10,16 @@ import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import gamax92.thistle.util.LogMessage;
+import net.berrycompany.bitcomputers.util.LogMessage;
 import li.cil.oc.Settings;
 import li.cil.oc.api.Items;
 import li.cil.oc.api.Machine;
 import net.minecraftforge.common.config.Configuration;
 
-@Mod(modid = Thistle.MODID, name = Thistle.NAME, version = Thistle.VERSION, dependencies = "required-after:opencomputers@[1.7.5,)")
-public class Thistle {
-	public static final String MODID = "thistle";
-	public static final String NAME = "Thistle Computer";
+@Mod(modid = BitComputers.MODID, name = BitComputers.NAME, version = BitComputers.VERSION, dependencies = "required-after:opencomputers@[1.7.5,)")
+public class BitComputers {
+	public static final String MODID = "bitcomputers";
+	public static final String NAME = "BitComputers";
 	public static final String VERSION = "1.2.0";
 
 	public static Logger log;
@@ -29,11 +29,11 @@ public class Thistle {
 
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
-		log = LogManager.getLogger(MODID, new LogMessage("Thistle"));
+		log = LogManager.getLogger(MODID, new LogMessage("BitComputers"));
 		config = new Configuration(event.getSuggestedConfigurationFile());
 
-		ThistleConfig.loadConfig(config);
-		Machine.add(ThistleArchitecture.class);
+		BitComputersConfig.loadConfig(config);
+		Machine.add(BitComputersArchitecture.class);
 	}
 
 	@Mod.EventHandler

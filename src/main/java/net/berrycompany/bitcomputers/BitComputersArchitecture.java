@@ -1,4 +1,4 @@
-package gamax92.thistle;
+package net.berrycompany.bitcomputers;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -6,16 +6,15 @@ import java.io.IOException;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import net.berrycompany.bitcomputers.devices.BankSelector;
+import net.berrycompany.bitcomputers.exceptions.CallSynchronizedException;
+import net.berrycompany.bitcomputers.util.ValueManager;
 import net.minecraftforge.common.MinecraftForge;
 import org.apache.commons.io.IOUtils;
 
 import com.loomcom.symon.Cpu;
 import com.loomcom.symon.CpuState;
 
-import gamax92.thistle.devices.BankSelector;
-import gamax92.thistle.exceptions.CallSynchronizedException;
-import gamax92.thistle.exceptions.CallSynchronizedException.Cleanup;
-import gamax92.thistle.util.ValueManager;
 import li.cil.oc.Settings;
 import li.cil.oc.api.Driver;
 import li.cil.oc.api.driver.item.Processor;
@@ -36,11 +35,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import scala.Option;
 
-@Architecture.Name("65CE02 Thistle")
-public class ThistleArchitecture implements Architecture {
+@Architecture.Name("65CE02")
+public class BitComputersArchitecture implements Architecture {
 	private final Machine machine;
 
-	private ThistleVM vm;
+	private BitComputersVM vm;
 
 	private boolean initialized = false;
 
@@ -49,7 +48,7 @@ public class ThistleArchitecture implements Architecture {
 	private CallSynchronizedException syncCall;
 
 	/** The constructor must have exactly this signature. */
-	public ThistleArchitecture(Machine machine) {
+	public BitComputersArchitecture(Machine machine) {
 		this.machine = machine;
 	}
 
@@ -81,14 +80,14 @@ public class ThistleArchitecture implements Architecture {
 	@Override
 	public boolean initialize() {
 		// Set up new VM here
-		vm = new ThistleVM(machine);
+		vm = new BitComputersVM(machine);
 		BankSelector banksel = this.vm.machine.getBankSelector();
 		int memory = calculateMemory(this.machine.host().internalComponents());
 		vm.machine.resize(memory);
 		vm.machine.reset();
 		for (ItemStack component : machine.host().internalComponents()) {
 			if (Driver.driverFor(component) instanceof Processor) {
-				vm.cyclesPerTick = ThistleConfig.debugCpuSlowDown ? 10 : (Driver.driverFor(component).tier(component) + 1) * ThistleConfig.clocksPerTick;
+				vm.cyclesPerTick = BitComputersConfig.debugCpuSlowDown ? 10 : (Driver.driverFor(component).tier(component) + 1) * BitComputersConfig.clocksPerTick;
 				break;
 			}
 		}
@@ -128,8 +127,8 @@ public class ThistleArchitecture implements Architecture {
 			return new ExecutionResult.Sleep(0);
 		} catch (CallSynchronizedException e) {
 			if (e.getCleanup() != null) {
-				if (ThistleConfig.debugCpuTraceLog) // Exceptions thrown cause ThistleVM to skip trace logging.
-					Thistle.log.info("[Cpu] " + vm.machine.getCpu().getCpuState().toTraceEvent());
+				if (BitComputersConfig.debugCpuTraceLog) // Exceptions thrown cause BitComputersVM to skip trace logging.
+					BitComputers.log.info("[Cpu] " + vm.machine.getCpu().getCpuState().toTraceEvent());
 				syncCall = e;
 			}
 			return new ExecutionResult.SynchronizedCall();
@@ -146,7 +145,7 @@ public class ThistleArchitecture implements Architecture {
 		if (syncCall != null) {
 			// Nice clean method for us to avoid multiple bus writes
 			Object thing = syncCall.getThing();
-			Cleanup cleanup = syncCall.getCleanup();
+			CallSynchronizedException.Cleanup cleanup = syncCall.getCleanup();
 			try {
 				Object[] results = null;
 				if (thing instanceof String)
@@ -225,7 +224,7 @@ public class ThistleArchitecture implements Architecture {
 				for (int i = 0; i < mem.length; i++)
 					vm.machine.writeMem(i, mem[i]);
 			} catch (IOException e) {
-				Thistle.log.error("Failed to decompress memory from disk.");
+				BitComputers.log.error("Failed to decompress memory from disk.");
 				e.printStackTrace();
 			}
 		}
@@ -269,7 +268,7 @@ public class ThistleArchitecture implements Architecture {
 			gzos.close();
 			SaveHandler.scheduleSave(machine.host(), nbt, machine.node().address() + "_memory", baos.toByteArray());
 		} catch (IOException e) {
-			Thistle.log.error("Failed to compress memory to disk");
+			BitComputers.log.error("Failed to compress memory to disk");
 			e.printStackTrace();
 		}
 

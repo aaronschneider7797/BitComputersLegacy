@@ -1,4 +1,4 @@
-package gamax92.thistle.exceptions;
+package net.berrycompany.bitcomputers.exceptions;
 
 import li.cil.oc.api.machine.Context;
 

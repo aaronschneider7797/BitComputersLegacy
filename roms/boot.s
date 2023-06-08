@@ -5,7 +5,7 @@
 
 .segment	"STARTUP"
 
-.byte "--[[CABE:Thistle:"
+.byte "--[[CABE:65C02:"
 
 .segment "RODATA"
 
@@ -13,13 +13,13 @@
 fslist: .byte 10,10,0,"filesystem",0
 umlist: .byte 10,5,0,"drive",0
 secread: .byte 10,10,0,"readSector",3,1,0
-fsopend: .byte 10,4,0,"open",10,12,0,"Thistle/boot",0
-fsopenf: .byte 10,4,0,"open",10,7,0,"Thistle",0
+fsopend: .byte 10,4,0,"open",10,12,0,"65C02/boot",0
+fsopenf: .byte 10,4,0,"open",10,7,0,"65C02",0
 fsclose: .byte 10,5,0,"close"
 fsread: .byte 10,4,0,"read",14,0,0,0,0,4,0,1,0
 
 ; Messages
-greeting: .byte "Thistle Boot ROM",13,10,10
+greeting: .byte "65C02 Boot ROM",13,10,10
 nomem: .byte "No Memory installed"
 drives: .byte "Checking drives ...",13,10
 fsmsg: .byte 10,"Checking filesystems ...",13,10
@@ -487,10 +487,10 @@ fschk:
 	jmp failboot ; No "filesystem" componets left to check
 :	jsr loaduuid
 	dmaload , $D001
-	dmacopy fsopend, , .sizeof(fsopend), mode_up ; (fsopend, $D001, .sizeof(fsopend), mode_up) open Thistle/boot
+	dmacopy fsopend, , .sizeof(fsopend), mode_up ; (fsopend, $D001, .sizeof(fsopend), mode_up) open 65C02/boot
 	stz $D000
 	jsr bootfs
-	dmacopy fsopenf, , .sizeof(fsopenf), mode_up ; (fsopenf, $D001, .sizeof(fsopenf), mode_up) open Thistle
+	dmacopy fsopenf, , .sizeof(fsopenf), mode_up ; (fsopenf, $D001, .sizeof(fsopenf), mode_up) open 65C02
 	stz $D000
 	jsr bootfs
 	dec $03
@@ -1113,7 +1113,7 @@ cmd_fs:
 
 .segment "RODATA"
 
-.byte "]]error",$22,"Thistle architecture required",$22,"--"
+.byte "]]error",$22,"65C02 architecture required",$22,"--"
 
 .segment "STARTUP"
 

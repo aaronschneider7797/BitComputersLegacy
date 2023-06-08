@@ -1,5 +1,5 @@
 ;
-; Startup code for cc65 (Thistle version)
+; Startup code for cc65 (BitComputers version)
 ;
 
         .export         _exit

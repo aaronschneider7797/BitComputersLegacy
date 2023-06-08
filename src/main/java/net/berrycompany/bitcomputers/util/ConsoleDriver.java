@@ -1,4 +1,4 @@
-package gamax92.thistle.util;
+package net.berrycompany.bitcomputers.util;
 
 import java.util.LinkedList;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package gamax92.thistle;
+package net.berrycompany.bitcomputers;
 
 import com.loomcom.symon.Cpu;
 
@@ -7,25 +7,25 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
-public class ThistleVM {
+public class BitComputersVM {
 	// The simulated machine
-	public ThistleMachine machine;
+	public BitComputersMachine machine;
 
 	// Allocated cycles per tick
 	public int cyclesPerTick;
 
-	public ThistleVM(Context context) {
+	public BitComputersVM(Context context) {
 		super();
 		MinecraftForge.EVENT_BUS.register(this);
 		try {
-			machine = new ThistleMachine(context);
+			machine = new BitComputersMachine(context);
 			if (context.node().network() == null) {
 				// Loading from NBT
 				return;
 			}
 			machine.getCpu().reset();
 		} catch (Exception e) {
-			Thistle.log.warn("Failed to setup Thistle", e);
+			BitComputers.log.warn("Failed to setup BitComputers", e);
 		}
 	}
 

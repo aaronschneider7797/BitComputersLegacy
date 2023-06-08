@@ -1,8 +1,8 @@
-package gamax92.thistle.devices;
+package net.berrycompany.bitcomputers.devices;
 
 import com.loomcom.symon.Bus;
 import com.loomcom.symon.devices.Device;
-import gamax92.thistle.util.UUIDHelper;
+import net.berrycompany.bitcomputers.util.UUIDHelper;
 import li.cil.oc.api.machine.Machine;
 import net.minecraft.nbt.NBTTagCompound;
 

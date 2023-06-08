@@ -1,4 +1,4 @@
-package gamax92.thistle.devices;
+package net.berrycompany.bitcomputers.devices;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;

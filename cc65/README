@@ -1,16 +1,16 @@
-Thistle config for cc65
+BitComputers config for cc65
 =======================
-The files contained in this directory can be used in cc65, allowing you to code with ca65 or in C with cc65. The thistle.cfg is for programs intended to be booted by the eeprom, and the thistle-eeprom.cfg is for doing eeprom development.
+The files contained in this directory can be used in cc65, allowing you to code with ca65 or in C with cc65. The bitcomputers.cfg is for programs intended to be booted by the eeprom, and the bitcomputers-eeprom.cfg is for doing eeprom development.
 
 Example usage:
 ```
 $ cc65 -t none -O --cpu 65c02 main.c
 $ ca65 --cpu 65c02 main.s
-$ ld65 -C thistle.cfg -m main.map main.o thistle.lib
+$ ld65 -C bitcomputers.cfg -m main.map main.o bitcomputers.lib
 ```
 
 Compiling the boot rom:
 ```
 ca65 --cpu 65c02 boot.s
-ld65 -o boot.rom -C thistle-eeprom.cfg -m boot.map boot.o
+ld65 -o boot.rom -C bitcomputers-eeprom.cfg -m boot.map boot.o
 ```

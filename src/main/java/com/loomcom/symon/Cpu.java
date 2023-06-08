@@ -25,8 +25,8 @@ package com.loomcom.symon;
 
 import com.loomcom.symon.util.Utils;
 
-import gamax92.thistle.Thistle;
-import gamax92.thistle.ThistleConfig;
+import net.berrycompany.bitcomputers.BitComputers;
+import net.berrycompany.bitcomputers.BitComputersConfig;
 
 /**
  * This class provides a simulation of the CSG 65CE02 CPU's state machine.
@@ -948,8 +948,8 @@ public class Cpu implements InstructionTable {
 			break;
 		}
 
-		if (ThistleConfig.debugCpuTraceLog)
-			Thistle.log.info("[Cpu] " + this.state.toTraceEvent());
+		if (BitComputersConfig.debugCpuTraceLog)
+			BitComputers.log.info("[Cpu] " + this.state.toTraceEvent());
 	}
 
 	private void handleBrk(int returnPc) {

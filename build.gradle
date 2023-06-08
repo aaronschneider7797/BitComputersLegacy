@@ -15,8 +15,8 @@ apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
 version = "1.12.2-1.2.0"
-group = "gamax92.thistle"
-archivesBaseName = "Thistle"
+group = "net.berrycompany.bitcomputers"
+archivesBaseName = "BitComputers"
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = "1.8"
 
@@ -55,7 +55,7 @@ dependencies {
 jar {
     manifest {
         attributes([
-                "Specification-Title": "Thistle",
+                "Specification-Title": "BitComputers",
                 "Specification-Vendor": "gamax92",
                 "Specification-Version": project.version,
                 "Implementation-Title": project.name,

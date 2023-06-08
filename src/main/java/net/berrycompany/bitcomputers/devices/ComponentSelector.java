@@ -1,4 +1,4 @@
-package gamax92.thistle.devices;
+package net.berrycompany.bitcomputers.devices;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -6,16 +6,16 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.UUID;
 
+import net.berrycompany.bitcomputers.api.IBitComputersDevice;
+import net.berrycompany.bitcomputers.api.BitComputersWrapper;
+import net.berrycompany.bitcomputers.api.WrapperRegistry;
+import net.berrycompany.bitcomputers.util.TSFHelper;
+import net.berrycompany.bitcomputers.util.ValueManager;
+import net.berrycompany.bitcomputers.wrapper.GenericDevice;
 import org.apache.commons.lang3.ArrayUtils;
 
 import com.loomcom.symon.Bus;
 import com.loomcom.symon.devices.Device;
-import gamax92.thistle.api.IThistleDevice;
-import gamax92.thistle.api.ThistleWrapper;
-import gamax92.thistle.api.WrapperRegistry;
-import gamax92.thistle.util.TSFHelper;
-import gamax92.thistle.util.ValueManager;
-import gamax92.thistle.wrapper.GenericDevice;
 import li.cil.oc.api.machine.Machine;
 import li.cil.oc.api.machine.Value;
 import li.cil.oc.api.network.Component;
@@ -34,7 +34,7 @@ public class ComponentSelector extends Device {
 
 	private final Queue<Byte> inputbuf = new LinkedList<>();
 	private final Queue<Byte> outputbuf = new LinkedList<>();
-	private final IThistleDevice[] components = new IThistleDevice[64];
+	private final IBitComputersDevice[] components = new IBitComputersDevice[64];
 
 	private NBTTagCompound[] delayConnectNBT;
 
@@ -55,8 +55,8 @@ public class ComponentSelector extends Device {
 			for (int i = 0; i < components.length; i++) {
 				if (delayConnectNBT[i] != null) {
 					mapComponent(delayConnectNBT[i].getString("_address"), i, delayConnectNBT[i].getBoolean("_generic"));
-					if (components[i] instanceof ThistleWrapper)
-						((ThistleWrapper) components[i]).load(delayConnectNBT[i]);
+					if (components[i] instanceof BitComputersWrapper)
+						((BitComputersWrapper) components[i]).load(delayConnectNBT[i]);
 				}
 			}
 			delayConnectNBT = null;
@@ -64,11 +64,11 @@ public class ComponentSelector extends Device {
 	}
 
 	private Environment getEnvironment(int index) {
-		IThistleDevice component = components[select];
+		IBitComputersDevice component = components[select];
 		if (component instanceof Environment)
 			return (Environment) component;
-		else if (component instanceof ThistleWrapper)
-			return ((ThistleWrapper) component).host();
+		else if (component instanceof BitComputersWrapper)
+			return ((BitComputersWrapper) component).host();
 		return null;
 	}
 
@@ -98,11 +98,11 @@ public class ComponentSelector extends Device {
 			components[select] = new GenericDevice(host);
 			return true;
 		}
-		if (host instanceof IThistleDevice) {
-			components[select] = (IThistleDevice) host;
+		if (host instanceof IBitComputersDevice) {
+			components[select] = (IBitComputersDevice) host;
 			return true;
 		}
-		Class<? extends ThistleWrapper> wrapper = WrapperRegistry.getWrapper(host.getClass());
+		Class<? extends BitComputersWrapper> wrapper = WrapperRegistry.getWrapper(host.getClass());
 		if (wrapper != null) {
 			try {
 				components[select] = wrapper.getDeclaredConstructor(Environment.class).newInstance(host);
@@ -305,11 +305,11 @@ public class ComponentSelector extends Device {
 		compTag.setByteArray("input", ArrayUtils.toPrimitive(inputbuf.toArray(new Byte[0])));
 		compTag.setByteArray("output", ArrayUtils.toPrimitive(outputbuf.toArray(new Byte[0])));
 		for (int i = 0; i < components.length; i++) {
-			IThistleDevice component = components[i];
+			IBitComputersDevice component = components[i];
 			if (component != null) {
 				NBTTagCompound deviceTag = new NBTTagCompound();
-				if (component instanceof ThistleWrapper)
-					((ThistleWrapper) component).save(nbt);
+				if (component instanceof BitComputersWrapper)
+					((BitComputersWrapper) component).save(nbt);
 				deviceTag.setString("_address", getEnvironment(i).node().address());
 				deviceTag.setBoolean("_generic", !(component instanceof GenericDevice));
 				compTag.setTag("comp" + i, deviceTag);
@@ -328,7 +328,7 @@ public class ComponentSelector extends Device {
 		return bankMask;
 	}
 
-	public IThistleDevice getComponent(int index) {
+	public IBitComputersDevice getComponent(int index) {
 		return components[index & 0x3F];
 	}
 }

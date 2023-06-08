@@ -1,4 +1,4 @@
-package gamax92.thistle.util;
+package net.berrycompany.bitcomputers.util;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -6,7 +6,7 @@ import java.util.Map;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
-import gamax92.thistle.Thistle;
+import net.berrycompany.bitcomputers.BitComputers;
 import li.cil.oc.api.machine.Context;
 import li.cil.oc.api.machine.Value;
 import net.minecraft.nbt.NBTTagCompound;
@@ -63,7 +63,7 @@ public class ValueManager {
 				value.load(nbt.getCompoundTag("nbt" + i));
 				valuemap.put(nbt.getInteger("id" + i), value);
 			} catch (Exception e) {
-				Thistle.log.error("Failed to restore Value from NBT", e);
+				BitComputers.log.error("Failed to restore Value from NBT", e);
 			}
 		}
 	}

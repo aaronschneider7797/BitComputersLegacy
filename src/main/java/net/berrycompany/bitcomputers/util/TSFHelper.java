@@ -1,7 +1,7 @@
-package gamax92.thistle.util;
+package net.berrycompany.bitcomputers.util;
 
 import com.google.common.base.Charsets;
-import gamax92.thistle.Thistle;
+import net.berrycompany.bitcomputers.BitComputers;
 import li.cil.oc.api.machine.Context;
 import li.cil.oc.api.machine.Value;
 import org.apache.commons.codec.binary.Hex;
@@ -215,7 +215,7 @@ public class TSFHelper {
 		else if (thing instanceof Value)
 			writeValue(buffer, (Value) thing, context);
 		else
-			Thistle.log.warn("Don't know how to TSF encode a " + thing + " (" + thing.getClass().getName() + "), please report this to Thistle's author.");
+			BitComputers.log.warn("Don't know how to TSF encode a " + thing + " (" + thing.getClass().getName() + "), please report this to BitComputers's author.");
 	}
 
 	public static void writeEnd(Queue<Byte> buffer) {

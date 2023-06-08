@@ -22,7 +22,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package gamax92.thistle;
+package net.berrycompany.bitcomputers;
 
 import li.cil.oc.api.machine.Context;
 
@@ -31,15 +31,15 @@ import java.util.ArrayList;
 import com.loomcom.symon.Bus;
 import com.loomcom.symon.Cpu;
 
-import gamax92.thistle.devices.BootROM;
-import gamax92.thistle.devices.ComponentSelector;
-import gamax92.thistle.devices.ComputerInfo;
-import gamax92.thistle.devices.CopyEngine;
-import gamax92.thistle.devices.RTC;
-import gamax92.thistle.devices.BankSelector;
-import gamax92.thistle.devices.GeneralIO;
+import net.berrycompany.bitcomputers.devices.BootROM;
+import net.berrycompany.bitcomputers.devices.ComponentSelector;
+import net.berrycompany.bitcomputers.devices.ComputerInfo;
+import net.berrycompany.bitcomputers.devices.CopyEngine;
+import net.berrycompany.bitcomputers.devices.RTC;
+import net.berrycompany.bitcomputers.devices.BankSelector;
+import net.berrycompany.bitcomputers.devices.GeneralIO;
 
-public class ThistleMachine {
+public class BitComputersMachine {
 
 	// Constants used by the simulated system. These define the memory map.
 
@@ -80,7 +80,7 @@ public class ThistleMachine {
 	// The machine memory
 	private final ArrayList<Byte> mem = new ArrayList<>();
 
-	public ThistleMachine(Context context) {
+	public BitComputersMachine(Context context) {
 		this.context = context;
 		this.bus = new Bus();
 		this.cpu = new Cpu();
@@ -140,7 +140,7 @@ public class ThistleMachine {
 	}
 
 	public String getName() {
-		return "Thistle";
+		return "BitComputers";
 	}
 
 	public Context getContext() {

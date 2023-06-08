@@ -1,4 +1,4 @@
-Thistle Computer
+BitComputers
 ================
 
 A 65CE02 arcitecture for OpenComputers.
