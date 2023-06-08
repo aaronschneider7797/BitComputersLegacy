@@ -19,6 +19,7 @@ public class BootROM extends Device {
 		super(address, 4096+256, "EEPROM");
 	}
 
+	@SuppressWarnings("BooleanMethodIsAlwaysInverted")
 	private boolean checkEEPROM() {
 		if (this.eepromAddress != null && this.machine.components().containsKey(this.eepromAddress))
 			return true;

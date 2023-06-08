@@ -64,7 +64,7 @@ public class ComponentSelector extends Device {
 	}
 
 	private Environment getEnvironment(int index) {
-		IBitComputersDevice component = components[select];
+		IBitComputersDevice component = components[index];
 		if (component instanceof Environment)
 			return (Environment) component;
 		else if (component instanceof BitComputersWrapper)
@@ -72,8 +72,9 @@ public class ComponentSelector extends Device {
 		return null;
 	}
 
+	@SuppressWarnings("SameParameterValue")
 	private Object parseTSF(Queue<Byte> buffer, boolean useSelect) {
-		if (buffer.size() == 0) {
+		if (buffer.isEmpty()) {
 			if (useSelect) {
 				Environment environment = getEnvironment(select);
 				return (environment != null) ? environment.node().address() : null;
@@ -224,7 +225,7 @@ public class ComponentSelector extends Device {
 					}
 				}
 				if (tsfdata instanceof Number) {
-					int select = ((Number) tsfdata).intValue() & 0x3F;
+					int select = (int) tsfdata & 0x3F;
 					Environment environment = getEnvironment(select);
 					if (environment != null) {
 						info++;
@@ -306,11 +307,12 @@ public class ComponentSelector extends Device {
 		compTag.setByteArray("output", ArrayUtils.toPrimitive(outputbuf.toArray(new Byte[0])));
 		for (int i = 0; i < components.length; i++) {
 			IBitComputersDevice component = components[i];
-			if (component != null) {
+			Environment environment = getEnvironment(i);
+			if (component != null && environment != null) {
 				NBTTagCompound deviceTag = new NBTTagCompound();
 				if (component instanceof BitComputersWrapper)
 					((BitComputersWrapper) component).save(nbt);
-				deviceTag.setString("_address", getEnvironment(i).node().address());
+				deviceTag.setString("_address", environment.node().address());
 				deviceTag.setBoolean("_generic", !(component instanceof GenericDevice));
 				compTag.setTag("comp" + i, deviceTag);
 			}

@@ -39,6 +39,7 @@ import net.minecraft.nbt.NBTTagCompound;
  * This is not an original/modified Symon file, this class exists in Symon's
  * package because it replaced an implementation of Symon's old Bus.
  */
+@SuppressWarnings("unused")
 public class Bus {
 
 	// EEPROM data+code at $EF00-$FFFF
@@ -46,7 +47,7 @@ public class Bus {
 	private static final int EEPROM_CODE_BASE = 0xF000;
 
 	private BitComputersMachine machine;
-	private ArrayList<Device> deviceList = new ArrayList<Device>();
+	private final ArrayList<Device> deviceList = new ArrayList<>();
 
 	public int read(int address) {
 		address &= 0xFFFF;

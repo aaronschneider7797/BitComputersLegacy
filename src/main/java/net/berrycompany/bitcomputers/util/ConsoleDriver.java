@@ -258,7 +258,7 @@ public class ConsoleDriver {
 						}
 						break;
 					case 'J':
-						if (ansiCode.length() == 0 || ansiCode.equals("0")) {
+						if (ansiCode.isEmpty() || ansiCode.equals("0")) {
 							databuf.add(-500);
 						} else if (ansiCode.equals("1")) {
 							databuf.add(-501);
@@ -266,7 +266,7 @@ public class ConsoleDriver {
 							databuf.add(-6);
 						break;
 					case 'K':
-						if (ansiCode.length() == 0 || ansiCode.equals("0"))
+						if (ansiCode.isEmpty() || ansiCode.equals("0"))
 							databuf.add(-502);
 						else if (ansiCode.equals("1"))
 							databuf.add(-503);
@@ -355,7 +355,7 @@ public class ConsoleDriver {
 	}
 
 	private int parseCode(String ansiCode) {
-		return ansiCode.length() > 0 ? Integer.parseInt(ansiCode) : 1;
+		return !ansiCode.isEmpty() ? Integer.parseInt(ansiCode) : 1;
 	}
 
 	private int clampW(int X) {

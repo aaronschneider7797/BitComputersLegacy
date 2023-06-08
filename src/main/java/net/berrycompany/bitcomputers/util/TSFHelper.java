@@ -10,6 +10,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import java.util.*;
 import java.util.regex.Pattern;
 
+@SuppressWarnings("unused")
 public class TSFHelper {
 
 	private static final Pattern uuidtest = Pattern.compile("^([0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12})$");

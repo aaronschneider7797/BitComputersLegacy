@@ -15,6 +15,7 @@ public class WrapperRegistry {
 		return INSTANCE;
 	}
 
+	@SuppressWarnings("unused")
 	public static void registerWrapper(Class<? extends Environment> host, Class<? extends BitComputersWrapper> wrapper) {
 		instance().registry.put(host, wrapper);
 	}

@@ -86,8 +86,8 @@ public class CpuState {
 	public boolean irqDisableFlag;
 	public boolean decimalModeFlag;
 	public boolean breakFlag;
-	public boolean overflowFlag;
 	public boolean extendFlag;
+	public boolean overflowFlag;
 
 	// Processor lockup
 	public boolean dead = false;

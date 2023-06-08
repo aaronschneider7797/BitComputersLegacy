@@ -31,9 +31,9 @@ public class GenericDevice extends BitComputersWrapper {
 	private byte[] uuid;
 	private String name;
 	private int status = 0;
-	private int flag = 0x20;
+	private int flag = 0x00;
 
-	private Cleanup cleanup = new Cleanup() {
+	private final Cleanup cleanup = new Cleanup() {
 		@Override
 		public void run(Object[] results, Context context) {
 			status = 0;
@@ -109,12 +109,13 @@ public class GenericDevice extends BitComputersWrapper {
 
 	@Override
 	public void write(Context context, int address, int data) {
+		Object[] tsfdata;
 		switch (address) {
 		case GENERIC_STATUS_REG:
 			outputbuf.clear();
 			switch (data) {
 			case 0: // invoke
-				Object[] tsfdata = TSFHelper.readArray(inputbuf, context, flag);
+				tsfdata = TSFHelper.readArray(inputbuf, context, flag);
 				if (BitComputersConfig.debugComponentCalls)
 					BitComputers.log.info("[Generic] (" + host().node().address() + ") Invoke: " + Arrays.deepToString(tsfdata));
 				if (tsfdata == null || tsfdata.length < 1) {
@@ -122,9 +123,9 @@ public class GenericDevice extends BitComputersWrapper {
 					break;
 				}
 				try {
-					Object[] results = null;
+					Object[] results;
 					BitComputersArchitecture bitComputers = ((BitComputersArchitecture) ((Machine) context).architecture());
-					if (tsfdata.length >= 1 && tsfdata[0] instanceof String) {
+					if (tsfdata[0] instanceof String) {
 						Object[] args = Arrays.copyOfRange(tsfdata, 1, tsfdata.length);
 						results = bitComputers.invoke(host().node().address(), (String) tsfdata[0], args);
 					} else if (tsfdata.length >= 2 && tsfdata[0] instanceof Value && tsfdata[1] instanceof String) {
@@ -164,23 +165,7 @@ public class GenericDevice extends BitComputersWrapper {
 				}
 				break;
 			case 3: // documentation
-				tsfdata = TSFHelper.readArray(inputbuf, context, false);
-				if (tsfdata == null || tsfdata.length != 0 || !(tsfdata[0] instanceof String)) {
-					status = 3;
-					break;
-				}
-				Callback callback = ((Machine) context).methods(host()).get(tsfdata[0]);
-				if (callback != null) {
-					String doc = callback.doc();
-					if (doc != null) {
-						status = 0;
-						TSFHelper.writeString(outputbuf, doc);
-					} else {
-						status = 1;
-					}
-				} else {
-					status = 2;
-				}
+				status = 3;
 				break;
 			default:
 				status = 0xFF;

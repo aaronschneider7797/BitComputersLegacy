@@ -26,6 +26,7 @@ package com.loomcom.symon.util;
 /**
  * Various Utilities
  */
+@SuppressWarnings("unused")
 public class Utils {
 
 	static final String NON_PRINTABLE = ".";

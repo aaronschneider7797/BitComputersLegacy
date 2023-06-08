@@ -7,6 +7,7 @@ import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 
 public class UUIDHelper {
+	@SuppressWarnings("unused")
 	public static byte[] encodeUUID(UUID uuid) {
 		return encodeUUID(uuid.toString());
 	}

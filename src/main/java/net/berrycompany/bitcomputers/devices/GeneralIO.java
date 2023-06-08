@@ -20,6 +20,7 @@ import li.cil.oc.api.machine.Machine;
 import li.cil.oc.api.machine.Signal;
 import net.minecraft.nbt.NBTTagCompound;
 
+@SuppressWarnings("UnstableApiUsage")
 public class GeneralIO extends Device {
 
 	private Context context;
@@ -34,6 +35,7 @@ public class GeneralIO extends Device {
 	private ConsoleDriver console;
 	private byte[] utf8buf = new byte[6]; // length, pos, b1, b2, b3, b4
 
+	@SuppressWarnings("unused")
 	private static final Pattern uuidtest = Pattern.compile("^([0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12})$");
 
 	static final int GIO_INPUTCHK_REG = 0;
@@ -67,7 +69,7 @@ public class GeneralIO extends Device {
 		case GIO_INPUTCHK_REG:
 			return inputbuf.size();
 		case GIO_INPUT_REG:
-			if (inputbuf.size() > 0)
+			if (!inputbuf.isEmpty())
 				return (inputbuf.remove() & 0xFF);
 			else
 				return 0;
@@ -76,7 +78,7 @@ public class GeneralIO extends Device {
 		case GIO_SIGNALCHK_REG:
 			return signalbuf.size();
 		case GIO_SIGNAL_REG:
-			if (signalbuf.size() > 0) {
+			if (!signalbuf.isEmpty()) {
 				byte[] signaldata = signalbuf.getFirst();
 				int data = (signaldata[signalpos] & 0xFF);
 				if (++signalpos >= signaldata.length) {

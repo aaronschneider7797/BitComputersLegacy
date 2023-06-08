@@ -30,6 +30,7 @@ package com.loomcom.symon;
  * some useful methods for checking address inclusion and range
  * overlaps.
  */
+@SuppressWarnings("unused")
 public class MemoryRange implements Comparable<MemoryRange> {
 
 	/**

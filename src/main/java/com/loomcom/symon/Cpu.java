@@ -33,6 +33,7 @@ import net.berrycompany.bitcomputers.BitComputersConfig;
  * A simple interface allows this 65CE02 to read and write to a simulated bus,
  * and exposes some of the internal state for inspection and debugging.
  */
+@SuppressWarnings("unused")
 public class Cpu implements InstructionTable {
 
 	/* Process status register mnemonics */
@@ -180,6 +181,9 @@ public class Cpu implements InstructionTable {
 		int effectiveAddress = 0;
 		int tmp; // Temporary storage
 
+		int lo;
+		int hi;
+
 		switch (Cpu.instructionModes[state.ir]) {
 		case ACC: // Accumulator
 		case IMM: // #Immediate
@@ -240,7 +244,7 @@ public class Cpu implements InstructionTable {
 		// Execute
 		switch (state.ir) {
 
-		/** Single Byte Instructions **/
+		/* Single Byte Instructions **/
 		case 0x00: // BRK - Force Interrupt - Implied
 			handleBrk(state.pc + 1);
 			break;
@@ -276,8 +280,8 @@ public class Cpu implements InstructionTable {
 			break;
 		case 0x40: // RTI - Return from Interrupt - Implied
 			setProcessorStatus(stackPop());
-			int lo = stackPop();
-			int hi = stackPop();
+			lo = stackPop();
+			hi = stackPop();
 			setProgramCounter(Utils.address(lo, hi));
 			break;
 		case 0x48: // PHA - Push Accumulator - Implied
@@ -1705,7 +1709,7 @@ public class Cpu implements InstructionTable {
 	 */
 	public String disassembleOpAtAddress(int address) {
 		int opCode = bus.read(address);
-		int args[] = new int[2];
+		int[] args = new int[2];
 		int size = Cpu.instructionModes[opCode].getLength();
 		for (int i = 1; i < size; i++) {
 			args[i - 1] = bus.read(address + i);

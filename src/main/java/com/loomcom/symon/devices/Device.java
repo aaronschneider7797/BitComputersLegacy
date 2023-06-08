@@ -32,6 +32,7 @@ import net.minecraft.nbt.NBTTagCompound;
  * A memory-mapped IO Device.
  */
 
+@SuppressWarnings("unused")
 public abstract class Device implements Comparable<Device> {
 
 	/**

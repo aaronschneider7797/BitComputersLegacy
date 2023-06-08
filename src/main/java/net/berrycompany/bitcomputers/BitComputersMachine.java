@@ -39,6 +39,7 @@ import net.berrycompany.bitcomputers.devices.RTC;
 import net.berrycompany.bitcomputers.devices.BankSelector;
 import net.berrycompany.bitcomputers.devices.GeneralIO;
 
+@SuppressWarnings("unused")
 public class BitComputersMachine {
 
 	// Constants used by the simulated system. These define the memory map.

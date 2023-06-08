@@ -57,8 +57,7 @@ public class BitComputers {
 				byte[] code = IOUtils.toByteArray(bootRom);
 				Items.registerEEPROM("EEPROM (65C02 BIOS)", code, null, false);
 			} catch (IOException e) {
-				log.warn("Failed reading boot.rom, no custom EEPROMs available");
-				e.printStackTrace();
+				log.warn("Failed reading boot.rom, no custom EEPROMs available", e);
 			} finally {
 				IOUtils.closeQuietly(bootRom);
 			}

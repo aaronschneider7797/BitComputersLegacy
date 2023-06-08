@@ -77,6 +77,7 @@ public class BitComputersArchitecture implements Architecture {
 		return true;
 	}
 
+	@SuppressWarnings("unused")
 	@Override
 	public boolean initialize() {
 		// Set up new VM here
@@ -135,7 +136,6 @@ public class BitComputersArchitecture implements Architecture {
 		} catch (LimitReachedException e) {
 			return new ExecutionResult.SynchronizedCall();
 		} catch (Throwable t) {
-			t.printStackTrace();
 			return new ExecutionResult.Error(t.toString());
 		}
 	}
@@ -224,8 +224,7 @@ public class BitComputersArchitecture implements Architecture {
 				for (int i = 0; i < mem.length; i++)
 					vm.machine.writeMem(i, mem[i]);
 			} catch (IOException e) {
-				BitComputers.log.error("Failed to decompress memory from disk.");
-				e.printStackTrace();
+				BitComputers.log.error("Failed to decompress memory from disk.", e);
 			}
 		}
 
@@ -270,27 +269,13 @@ public class BitComputersArchitecture implements Architecture {
 			gzos.close();
 			SaveHandler.scheduleSave(machine.host(), nbt, machine.node().address() + "_memory", baos.toByteArray());
 		} catch (IOException e) {
-			BitComputers.log.error("Failed to compress memory to disk");
-			e.printStackTrace();
+			BitComputers.log.error("Failed to compress memory to disk", e);
 		}
 
 		// Persist CPU
 		Cpu mCPU = vm.machine.getCpu();
 		if (mCPU != null) {
-			CpuState cpuState = mCPU.getCpuState();
-			NBTTagCompound cpuTag = new NBTTagCompound();
-			cpuTag.setInteger("rA", cpuState.a);
-			cpuTag.setInteger("rB", cpuState.b);
-			cpuTag.setInteger("rP", mCPU.getProcessorStatus());
-			cpuTag.setInteger("rPC", cpuState.pc);
-			cpuTag.setInteger("rSP", cpuState.sp);
-			cpuTag.setInteger("rX", cpuState.x);
-			cpuTag.setInteger("rY", cpuState.y);
-			cpuTag.setInteger("rZ", cpuState.z);
-			cpuTag.setBoolean("iI", cpuState.irqAsserted);
-			cpuTag.setBoolean("iN", cpuState.nmiAsserted);
-			cpuTag.setBoolean("sD", cpuState.dead);
-			cpuTag.setBoolean("sS", cpuState.sleep);
+			NBTTagCompound cpuTag = getNbtTagCompound(mCPU);
 			nbt.setTag("cpu", cpuTag);
 		}
 
@@ -300,5 +285,23 @@ public class BitComputersArchitecture implements Architecture {
 		nbt.setTag("values", valueTag);
 
 		vm.machine.getBus().save(nbt);
+	}
+
+	private static NBTTagCompound getNbtTagCompound(Cpu mCPU) {
+		CpuState cpuState = mCPU.getCpuState();
+		NBTTagCompound cpuTag = new NBTTagCompound();
+		cpuTag.setInteger("rA", cpuState.a);
+		cpuTag.setInteger("rB", cpuState.b);
+		cpuTag.setInteger("rP", mCPU.getProcessorStatus());
+		cpuTag.setInteger("rPC", cpuState.pc);
+		cpuTag.setInteger("rSP", cpuState.sp);
+		cpuTag.setInteger("rX", cpuState.x);
+		cpuTag.setInteger("rY", cpuState.y);
+		cpuTag.setInteger("rZ", cpuState.z);
+		cpuTag.setBoolean("iI", cpuState.irqAsserted);
+		cpuTag.setBoolean("iN", cpuState.nmiAsserted);
+		cpuTag.setBoolean("sD", cpuState.dead);
+		cpuTag.setBoolean("sS", cpuState.sleep);
+		return cpuTag;
 	}
 }
