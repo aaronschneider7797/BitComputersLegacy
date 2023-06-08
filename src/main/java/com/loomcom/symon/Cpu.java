@@ -1478,6 +1478,10 @@ public class Cpu implements InstructionTable {
 		return "$" + Utils.byteToHex(state.a);
 	}
 
+	public String getBasePageStatus() {
+		return "$" + Utils.byteToHex(state.b);
+	}
+
 	public String getXRegisterStatus() {
 		return "$" + Utils.byteToHex(state.x);
 	}
