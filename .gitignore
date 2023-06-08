@@ -10,4 +10,5 @@
 /build
 /lib
 /.idea
-
+/run
+/out

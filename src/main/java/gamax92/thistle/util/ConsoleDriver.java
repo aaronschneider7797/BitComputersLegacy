@@ -504,9 +504,9 @@ public class ConsoleDriver {
 
 					case -1001: // Cursor 1. GET
 						Object[] response2 = machine.invoke(gpuADDR, "get", new Object[] { this.X, this.Y });
-						this.cursorChar = (Character) response2[0];
-						this.cursorFG = (Integer) response2[2];
-						this.cursorBG = (Integer) response2[1];
+						this.cursorChar = response2[0].toString().charAt(0);
+						this.cursorFG = (int) response2[2];
+						this.cursorBG = (int) response2[1];
 						chained.add(-1002);
 						break;
 					case -1002: // Cursor 2. Set BG
