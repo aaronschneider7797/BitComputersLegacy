@@ -208,8 +208,8 @@ public class GeneralIO extends Device {
 		for (int i = 0; i < length; i++)
 			sigTag.setByteArray("S" + i, signalbuf.get(i));
 		genioTag.setTag("signals", sigTag);
-		genioTag.setByteArray("input", ArrayUtils.toPrimitive(inputbuf.toArray(new Byte[0])));
-		genioTag.setByteArray("queue", ArrayUtils.toPrimitive(queuebuf.toArray(new Byte[0])));
+		genioTag.setByteArray("input", ArrayUtils.toPrimitive(inputbuf.toArray(new byte[0])));
+		genioTag.setByteArray("queue", ArrayUtils.toPrimitive(queuebuf.toArray(new byte[0])));
 		nbt.setTag("genio", genioTag);
 	}
 
@@ -223,8 +223,8 @@ public class GeneralIO extends Device {
 		Object[] args = signal.args();
 		Cpu cpu = this.getBus().getMachine().getCpu();
 		if (name.equals("key_down")) {
-			int character = ((Double) args[1]).intValue();
-			int lwjglcode = ((Double) args[2]).intValue();
+			int character = args[1].intValue();
+			int lwjglcode = args[2].intValue();
 
 			// Fix various key issues
 			if (lwjglcode == Keyboard.KEY_BACK) // Normalize Backspace
@@ -247,7 +247,7 @@ public class GeneralIO extends Device {
 			else if ((irqmask & 1) != 0)
 				cpu.assertIrq();
 		} else if (name.equals("clipboard")) {
-			byte[] paste = ((String) args[1]).getBytes(Charsets.UTF_8);
+			byte[] paste = args[1].toString().getBytes(Charsets.UTF_8);
 			if (paste.length > 0) {
 				for (byte data : paste)
 					inputbuf.add(data);

@@ -22,7 +22,7 @@ public class ValueManager {
 	private static void addValue(BiMap<Integer, Value> valuemap, Value value) {
 		int id = value.hashCode();
 		while (valuemap.containsKey(id))
-			id = (int) ((Math.random()*2-1) * -((double) Integer.MIN_VALUE));
+			id = (int) ((Math.random()*2-1) * -(Double.MIN_VALUE));
 		valuemap.put(id, value);
 	}
 
