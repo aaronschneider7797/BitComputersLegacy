@@ -41,8 +41,9 @@ public interface InstructionTable {
 		IMP("Implied", 1),
 		REL("Relative", 2),
 		REW("Relative (Word)", 3),
-		XIN("X-indexed Indirect", 2),
+		XIN("X-indexed Indirect, ", 2),
 		INY("Indirect, Y-indexed", 2),
+		INZ("Indirect, Z-indexed", 2),
 		IND("Absolute Indirect", 3),
 		IAX("Absolute Indirect, X-indexed", 3),
 		IZP("Zeropage Indirect", 2),
@@ -97,11 +98,11 @@ public interface InstructionTable {
 	Mode[] instructionModes = {
 		Mode.IMP,Mode.XIN,Mode.IMP,Mode.IMP,Mode.ZPG,Mode.ZPG,Mode.ZPG,Mode.ZPG, // 0x00-0x07
 		Mode.IMP,Mode.IMM,Mode.ACC,Mode.IMP,Mode.ABS,Mode.ABS,Mode.ABS,Mode.ZPR, // 0x08-0x0f
-		Mode.REL,Mode.INY,Mode.IZP,Mode.REW,Mode.ZPG,Mode.ZPX,Mode.ZPX,Mode.ZPG, // 0x10-0x17
+		Mode.REL,Mode.INY,Mode.INZ,Mode.REW,Mode.ZPG,Mode.ZPX,Mode.ZPX,Mode.ZPG, // 0x10-0x17
 		Mode.IMP,Mode.ABY,Mode.ACC,Mode.IMP,Mode.ABS,Mode.ABX,Mode.ABX,Mode.ZPR, // 0x18-0x1f
 		Mode.ABS,Mode.XIN,Mode.IND,Mode.IAX,Mode.ZPG,Mode.ZPG,Mode.ZPG,Mode.ZPG, // 0x20-0x27
 		Mode.IMP,Mode.IMM,Mode.ACC,Mode.IMP,Mode.ABS,Mode.ABS,Mode.ABS,Mode.ZPR, // 0x28-0x2f
-		Mode.REL,Mode.INY,Mode.IZP,Mode.REW,Mode.ZPX,Mode.ZPX,Mode.ZPX,Mode.ZPG, // 0x30-0x37
+		Mode.REL,Mode.INY,Mode.INZ,Mode.REW,Mode.ZPX,Mode.ZPX,Mode.ZPX,Mode.ZPG, // 0x30-0x37
 		Mode.IMP,Mode.ABY,Mode.ACC,Mode.IMP,Mode.ABX,Mode.ABX,Mode.ABX,Mode.ZPR, // 0x38-0x3f
 		Mode.IMP,Mode.XIN,Mode.ACC,Mode.ZPG,Mode.ZPG,Mode.ZPG,Mode.ZPG,Mode.ZPG, // 0x40-0x47
 		Mode.IMP,Mode.IMM,Mode.ACC,Mode.IMP,Mode.ABS,Mode.ABS,Mode.ABS,Mode.ZPR, // 0x48-0x4f
@@ -109,23 +110,23 @@ public interface InstructionTable {
 		Mode.IMP,Mode.ABY,Mode.IMP,Mode.IMP,Mode.IMP,Mode.ABX,Mode.ABX,Mode.ZPR, // 0x58-0x5f
 		Mode.IMP,Mode.XIN,Mode.IMM,Mode.REW,Mode.ZPG,Mode.ZPG,Mode.ZPG,Mode.ZPG, // 0x60-0x67
 		Mode.IMP,Mode.IMM,Mode.ACC,Mode.IMP,Mode.IND,Mode.ABS,Mode.ABS,Mode.ZPR, // 0x68-0x6f
-		Mode.REL,Mode.INY,Mode.IZP,Mode.REW,Mode.ZPX,Mode.ZPX,Mode.ZPX,Mode.ZPG, // 0x70-0x77
+		Mode.REL,Mode.INY,Mode.INZ,Mode.REW,Mode.ZPX,Mode.ZPX,Mode.ZPX,Mode.ZPG, // 0x70-0x77
 		Mode.IMP,Mode.ABY,Mode.IMP,Mode.IMP,Mode.IAX,Mode.ABX,Mode.ABX,Mode.ZPR, // 0x78-0x7f
 		Mode.REL,Mode.XIN,Mode.SAY,Mode.REW,Mode.ZPG,Mode.ZPG,Mode.ZPG,Mode.ZPG, // 0x80-0x87
 		Mode.IMP,Mode.IMM,Mode.IMP,Mode.ABX,Mode.ABS,Mode.ABS,Mode.ABS,Mode.ZPR, // 0x88-0x8f
-		Mode.REL,Mode.INY,Mode.IZP,Mode.REW,Mode.ZPX,Mode.ZPX,Mode.ZPY,Mode.ZPG, // 0x90-0x97
+		Mode.REL,Mode.INY,Mode.INZ,Mode.REW,Mode.ZPX,Mode.ZPX,Mode.ZPY,Mode.ZPG, // 0x90-0x97
 		Mode.IMP,Mode.ABY,Mode.IMP,Mode.ABY,Mode.ABS,Mode.ABX,Mode.ABX,Mode.ZPR, // 0x98-0x9f
 		Mode.IMM,Mode.XIN,Mode.IMM,Mode.IMM,Mode.ZPG,Mode.ZPG,Mode.ZPG,Mode.ZPG, // 0xa0-0xa7
 		Mode.IMP,Mode.IMM,Mode.IMP,Mode.ABS,Mode.ABS,Mode.ABS,Mode.ABS,Mode.ZPR, // 0xa8-0xaf
-		Mode.REL,Mode.INY,Mode.IZP,Mode.REW,Mode.ZPX,Mode.ZPX,Mode.ZPY,Mode.ZPG, // 0xb0-0xb7
+		Mode.REL,Mode.INY,Mode.INZ,Mode.REW,Mode.ZPX,Mode.ZPX,Mode.ZPY,Mode.ZPG, // 0xb0-0xb7
 		Mode.IMP,Mode.ABY,Mode.IMP,Mode.ABX,Mode.ABX,Mode.ABX,Mode.ABY,Mode.ZPR, // 0xb8-0xbf
 		Mode.IMM,Mode.XIN,Mode.IMM,Mode.ZPG,Mode.ZPG,Mode.ZPG,Mode.ZPG,Mode.ZPG, // 0xc0-0xc7
 		Mode.IMP,Mode.IMM,Mode.IMP,Mode.ABS,Mode.ABS,Mode.ABS,Mode.ABS,Mode.ZPR, // 0xc8-0xcf
-		Mode.REL,Mode.INY,Mode.IZP,Mode.REW,Mode.ZPX,Mode.ZPX,Mode.ZPX,Mode.ZPG, // 0xd0-0xd7
+		Mode.REL,Mode.INY,Mode.INZ,Mode.REW,Mode.ZPX,Mode.ZPX,Mode.ZPX,Mode.ZPG, // 0xd0-0xd7
 		Mode.IMP,Mode.ABY,Mode.IMP,Mode.IMP,Mode.ABS,Mode.ABX,Mode.ABX,Mode.ZPR, // 0xd8-0xdf
 		Mode.IMM,Mode.XIN,Mode.SAY,Mode.ZPG,Mode.ZPG,Mode.ZPG,Mode.ZPG,Mode.ZPG, // 0xe0-0xe7
 		Mode.IMP,Mode.IMM,Mode.IMP,Mode.ABS,Mode.ABS,Mode.ABS,Mode.ABS,Mode.ZPR, // 0xe8-0xef
-		Mode.REL,Mode.INY,Mode.IZP,Mode.IMW,Mode.ZPX,Mode.ZPX,Mode.ZPX,Mode.ZPG, // 0xf0-0xf7
+		Mode.REL,Mode.INY,Mode.INZ,Mode.IMW,Mode.ZPX,Mode.ZPX,Mode.ZPX,Mode.ZPG, // 0xf0-0xf7
 		Mode.IMP,Mode.ABY,Mode.IMP,Mode.ABS,Mode.ABS,Mode.ABX,Mode.ABX,Mode.ZPR  // 0xf8-0xff
 	};
 

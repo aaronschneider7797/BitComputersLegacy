@@ -219,6 +219,10 @@ public class Cpu implements InstructionTable {
 			tmp = Utils.address(bus.read(state.args[0]), bus.read((state.args[0] + 1) & 0xff));
 			effectiveAddress = (tmp + state.y) & 0xffff;
 			break;
+		case INZ: // (Zero Page),Z
+			tmp = Utils.address(bus.read(state.args[0]), bus.read((state.args[0] + 1) & 0xff));
+			effectiveAddress = (tmp + state.z) & 0xffff;
+			break;
 		case IND: // (Absolute)
 			tmp = Utils.address(state.args[0], state.args[1]);
 			effectiveAddress = Utils.address(bus.read(tmp), bus.read(tmp + 1));
@@ -408,7 +412,7 @@ public class Cpu implements InstructionTable {
 		case 0x05: // Zero Page
 		case 0x0d: // Absolute
 		case 0x11: // (Zero Page),Y
-		case 0x12: // (Zero Page)
+		case 0x12: // (Zero Page),Z
 		case 0x15: // Zero Page,X
 		case 0x19: // Absolute,Y
 		case 0x1d: // Absolute,X
@@ -471,7 +475,7 @@ public class Cpu implements InstructionTable {
 		case 0x25: // Zero Page
 		case 0x2d: // Absolute
 		case 0x31: // (Zero Page),Y
-		case 0x32: // (Zero Page)
+		case 0x32: // (Zero Page),Z
 		case 0x35: // Zero Page,X
 		case 0x39: // Absolute,Y
 		case 0x3d: // Absolute,X
@@ -502,7 +506,7 @@ public class Cpu implements InstructionTable {
 		case 0x45: // Zero Page
 		case 0x4d: // Absolute
 		case 0x51: // (Zero Page),Y
-		case 0x52: // (Zero Page)
+		case 0x52: // (Zero Page),Z
 		case 0x55: // Zero Page,X
 		case 0x59: // Absolute,Y
 		case 0x5d: // Absolute,X
@@ -543,7 +547,7 @@ public class Cpu implements InstructionTable {
 		case 0x65: // Zero Page
 		case 0x6d: // Absolute
 		case 0x71: // (Zero Page),Y
-		case 0x72: // (Zero Page)
+		case 0x72: // (Zero Page),Z
 		case 0x75: // Zero Page,X
 		case 0x79: // Absolute,Y
 		case 0x7d: // Absolute,X
@@ -582,7 +586,7 @@ public class Cpu implements InstructionTable {
 		case 0x85: // Zero Page
 		case 0x8d: // Absolute
 		case 0x91: // (Zero Page),Y
-		case 0x92: // (Zero Page)
+		case 0x92: // (Zero Page),Z
 		case 0x95: // Zero Page,X
 		case 0x99: // Absolute,Y
 		case 0x9d: // Absolute,X
@@ -651,10 +655,11 @@ public class Cpu implements InstructionTable {
 		case 0xa5: // Zero Page
 		case 0xad: // Absolute
 		case 0xb1: // (Zero Page),Y
-		case 0xb2: // Stack Relative,Y
+		case 0xb2: // (Zero Page),Z
 		case 0xb5: // Zero Page,X
 		case 0xb9: // Absolute,Y
 		case 0xbd: // Absolute,X
+		case 0xe2: // Stack Relative,Y
 			state.a = bus.read(effectiveAddress);
 			setArithmeticFlags(state.a);
 			break;
@@ -685,7 +690,7 @@ public class Cpu implements InstructionTable {
 		case 0xc5: // Zero Page
 		case 0xcd: // Absolute
 		case 0xd1: // (Zero Page),Y
-		case 0xd2: // (Zero Page)
+		case 0xd2: // (Zero Page),Z
 		case 0xd5: // Zero Page,X
 		case 0xd9: // Absolute,Y
 		case 0xdd: // Absolute,X
@@ -726,7 +731,7 @@ public class Cpu implements InstructionTable {
 		case 0xe5: // Zero Page
 		case 0xed: // Absolute
 		case 0xf1: // (Zero Page),Y
-		case 0xf2: // (Zero Page)
+		case 0xf2: // (Zero Page),Z
 		case 0xf5: // Zero Page,X
 		case 0xf9: // Absolute,Y
 		case 0xfd: // Absolute,X
@@ -1481,6 +1486,10 @@ public class Cpu implements InstructionTable {
 		return "$" + Utils.byteToHex(state.y);
 	}
 
+	public String getZRegisterStatus() {
+		return "$" + Utils.byteToHex(state.z);
+	}
+
 	public String getProgramCounterStatus() {
 		return "$" + Utils.wordToHex(state.pc);
 	}
@@ -1628,11 +1637,14 @@ public class Cpu implements InstructionTable {
 		case IND:
 			sb.append(" ($").append(Utils.wordToHex(Utils.address(args[0], args[1]))).append(")");
 			break;
-		case XIN:
+		case ZIN:
 			sb.append(" ($").append(Utils.byteToHex(args[0])).append(",X)");
 			break;
 		case INY:
 			sb.append(" ($").append(Utils.byteToHex(args[0])).append("),Y");
+			break;
+		case INZ:
+			sb.append(" ($").append(Utils.byteToHex(args[0])).append("),Z");
 			break;
 		case REL:
 			sb.append(" ").append(Utils.byteToString(args[0]));
@@ -1654,6 +1666,9 @@ public class Cpu implements InstructionTable {
 			break;
 		case ZPR:
 			sb.append(" $").append(Utils.byteToHex(args[0])).append(",").append(Utils.byteToString(args[0]));
+			break;
+		case SAY:
+			sb.append(" ($").append(Utils.wordToHex(ToHex(args[0])).append(",SP),Y");
 			break;
 		default:
 			break;
