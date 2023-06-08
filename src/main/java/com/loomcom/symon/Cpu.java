@@ -100,9 +100,9 @@ public class Cpu implements InstructionTable {
 		state.irqDisableFlag = false;
 		state.decimalModeFlag = false;
 		state.breakFlag = false;
+		state.extendFlag = false;
 		state.overflowFlag = false;
 		state.negativeFlag = false;
-		state.extendFlag = false;
 
 		state.irqAsserted = false;
 
@@ -1169,28 +1169,6 @@ public class Cpu implements InstructionTable {
 	}
 
 	/**
-	 * @return the negative flag
-	 */
-	public boolean getNegativeFlag() {
-		return state.negativeFlag;
-	}
-
-	/**
-	 * @param negativeFlag the negative flag to set
-	 */
-	public void setNegativeFlag(boolean negativeFlag) {
-		state.negativeFlag = negativeFlag;
-	}
-
-	public void setNegativeFlag() {
-		state.negativeFlag = true;
-	}
-
-	public void clearNegativeFlag() {
-		state.negativeFlag = false;
-	}
-
-	/**
 	 * @return the carry flag
 	 */
 	public boolean getCarryFlag() {
@@ -1311,34 +1289,6 @@ public class Cpu implements InstructionTable {
 	}
 
 	/**
-	 * @return the overflow flag
-	 */
-	public boolean getOverflowFlag() {
-		return state.overflowFlag;
-	}
-
-	/**
-	 * @param overflowFlag the overflow flag to set
-	 */
-	public void setOverflowFlag(boolean overflowFlag) {
-		state.overflowFlag = overflowFlag;
-	}
-
-	/**
-	 * Sets the Overflow Flag
-	 */
-	public void setOverflowFlag() {
-		state.overflowFlag = true;
-	}
-
-	/**
-	 * Clears the Overflow Flag
-	 */
-	public void clearOverflowFlag() {
-		state.overflowFlag = false;
-	}
-
-	/**
 	 * @return the Extend Flag
 	 */
 	public boolean getExtendFlag() {
@@ -1364,6 +1314,56 @@ public class Cpu implements InstructionTable {
 	 */
 	public void clearExtendFlag() {
 		state.extendFlag = false;
+	}
+
+	/**
+	 * @return the negative flag
+	 */
+	public boolean getNegativeFlag() {
+		return state.negativeFlag;
+	}
+
+	/**
+	 * @param negativeFlag the negative flag to set
+	 */
+	public void setNegativeFlag(boolean negativeFlag) {
+		state.negativeFlag = negativeFlag;
+	}
+
+	public void setNegativeFlag() {
+		state.negativeFlag = true;
+	}
+
+	public void clearNegativeFlag() {
+		state.negativeFlag = false;
+	}
+
+	/**
+	 * @return the overflow flag
+	 */
+	public boolean getOverflowFlag() {
+		return state.overflowFlag;
+	}
+
+	/**
+	 * @param overflowFlag the overflow flag to set
+	 */
+	public void setOverflowFlag(boolean overflowFlag) {
+		state.overflowFlag = overflowFlag;
+	}
+
+	/**
+	 * Sets the Overflow Flag
+	 */
+	public void setOverflowFlag() {
+		state.overflowFlag = true;
+	}
+
+	/**
+	 * Clears the Overflow Flag
+	 */
+	public void clearOverflowFlag() {
+		state.overflowFlag = false;
 	}
 
 	/**

@@ -81,13 +81,13 @@ public class CpuState {
 
 	/* Status Flag Register bits */
 	public boolean carryFlag;
-	public boolean negativeFlag;
 	public boolean zeroFlag;
 	public boolean irqDisableFlag;
 	public boolean decimalModeFlag;
 	public boolean breakFlag;
 	public boolean extendFlag;
 	public boolean overflowFlag;
+	public boolean negativeFlag;
 
 	// Processor lockup
 	public boolean dead = false;
