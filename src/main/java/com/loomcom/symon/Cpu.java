@@ -1637,9 +1637,6 @@ public class Cpu implements InstructionTable {
 		case IND:
 			sb.append(" ($").append(Utils.wordToHex(Utils.address(args[0], args[1]))).append(")");
 			break;
-		case ZIN:
-			sb.append(" ($").append(Utils.byteToHex(args[0])).append(",X)");
-			break;
 		case INY:
 			sb.append(" ($").append(Utils.byteToHex(args[0])).append("),Y");
 			break;
