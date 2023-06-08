@@ -190,7 +190,7 @@ public class Cpu implements InstructionTable {
 			// Not Applicable
 			break;
 		case ZPG: // Zero Page
-			effectiveAddress = state.args[0];
+			effectiveAddress = state.args[0] & 0xff;
 			break;
 		case ZPX: // Zero Page,X
 			effectiveAddress = (state.args[0] + state.x) & 0xff;
@@ -208,8 +208,8 @@ public class Cpu implements InstructionTable {
 			effectiveAddress = (Utils.address(state.args[0], state.args[1]) + state.y) & 0xffff;
 			break;
 		case SAY: // Stack Relative,Y
-			tmp = (Utils.address(state.args[0], state.args[1]) + state.sp);
-			effectiveAddress = (tmp + state.y) & 0xffff;
+			tmp = state.args[1] + state.sp;
+			effectiveAddress = (Utils.address(state.args[0], tmp) + state.y) & 0xffff;
 			break;
 		case XIN: // (Zero Page,X)
 			tmp = (state.args[0] + state.x) & 0xff;
