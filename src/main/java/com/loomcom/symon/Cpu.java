@@ -191,17 +191,17 @@ public class Cpu implements InstructionTable {
 		case IMP: // Implied
 		case REL: // Relative
 		case REW: // Relative (word)
-		case ZPR: // Zero Page Relative
-			// Not Applicable
+		case BPR: // Base Page Relative
+			effectiveAddress = state.b;
 			break;
-		case ZPG: // Zero Page
-			effectiveAddress = state.args[0] & 0xff;
+		case BPG: // Base Page
+			effectiveAddress = Utils.address(state.args[0], state.b) & 0xff;
 			break;
-		case ZPX: // Zero Page,X
-			effectiveAddress = (state.args[0] + state.x) & 0xff;
+		case BPX: // Base Page,X
+			effectiveAddress = Utils.address((state.args[0] + state.x), state.b) & 0xff;
 			break;
-		case ZPY: // Zero Page,Y
-			effectiveAddress = (state.args[0] + state.y) & 0xff;
+		case BPY: // Base Page,Y
+			effectiveAddress = Utils.address((state.args[0] + state.y), state.b) & 0xff;
 			break;
 		case ABS: // Absolute
 			effectiveAddress = Utils.address(state.args[0], state.args[1]);
@@ -216,16 +216,16 @@ public class Cpu implements InstructionTable {
 			tmp = state.args[1] + ((state.sp >> 8) & 0xffff);
 			effectiveAddress = (Utils.address(state.args[0], tmp) + state.y) & 0xffff;
 			break;
-		case XIN: // (Zero Page,X)
+		case XIN: // (Base Page,X)
 			tmp = (state.args[0] + state.x) & 0xff;
-			effectiveAddress = Utils.address(bus.read(tmp), bus.read(tmp + 1));
+			effectiveAddress = Utils.address(bus.read(tmp), bus.read(tmp + state.b));
 			break;
-		case INY: // (Zero Page),Y
-			tmp = Utils.address(bus.read(state.args[0]), bus.read((state.args[0] + 1) & 0xff));
+		case INY: // (Base Page),Y
+			tmp = Utils.address(bus.read(state.args[0]), bus.read((state.args[0] + state.b) & 0xff));
 			effectiveAddress = (tmp + state.y) & 0xffff;
 			break;
-		case INZ: // (Zero Page),Z
-			tmp = Utils.address(bus.read(state.args[0]), bus.read((state.args[0] + 1) & 0xff));
+		case INZ: // (Base Page),Z
+			tmp = Utils.address(bus.read(state.args[0]), bus.read((state.args[0] + state.b) & 0xff));
 			effectiveAddress = (tmp + state.z) & 0xffff;
 			break;
 		case IND: // (Absolute)
@@ -236,8 +236,8 @@ public class Cpu implements InstructionTable {
 			tmp = (Utils.address(state.args[0], state.args[1]) + state.x) & 0xffff;
 			effectiveAddress = Utils.address(bus.read(tmp), bus.read(tmp + 1));
 			break;
-		case IZP: // (Zero Page)
-			effectiveAddress = Utils.address(bus.read(state.args[0]), bus.read((state.args[0] + 1) & 0xff));
+		case IZB: // (Base Page)
+			effectiveAddress = Utils.address(bus.read(state.args[0]), bus.read((state.args[0] + state.b) & 0xff));
 			break;
 		}
 
@@ -1675,22 +1675,22 @@ public class Cpu implements InstructionTable {
 		case REL:
 			sb.append(" ").append(Utils.byteToString(args[0]));
 			break;
-		case ZPG:
+		case BPG:
 			sb.append(" $").append(Utils.byteToHex(args[0]));
 			break;
-		case ZPX:
+		case BPX:
 			sb.append(" $").append(Utils.byteToHex(args[0])).append(",X");
 			break;
-		case ZPY:
+		case BPY:
 			sb.append(" $").append(Utils.byteToHex(args[0])).append(",Y");
 			break;
 		case IAX:
 			sb.append(" ($").append(Utils.wordToHex(Utils.address(args[0], args[1]))).append(",X)");
 			break;
-		case IZP:
+		case IZB:
 			sb.append(" ($").append(Utils.byteToHex(args[0])).append(")");
 			break;
-		case ZPR:
+		case BPR:
 			sb.append(" $").append(Utils.byteToHex(args[0])).append(",").append(Utils.byteToString(args[0]));
 			break;
 		case SAY:
