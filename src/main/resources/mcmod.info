@@ -1,8 +1,8 @@
 [
 {
-  "modid": "bitcomputers",
-  "name": "BitComputers",
-  "description": "65CE02 Architecture for OpenComputers.",
+  "modid": "bitcomputerslegacy",
+  "name": "BitComputers Legacy",
+  "description": "65C02 Architecture for OpenComputers.",
   "version": "${version}",
   "mcversion": "${mcversion}",
   "url": "",

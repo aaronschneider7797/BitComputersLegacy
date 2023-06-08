@@ -31,29 +31,25 @@ public interface InstructionTable {
 	enum Mode {
 		ACC("Accumulator", 1),
 		IMM("Immediate", 2),
-		IMW("Immediate (word)", 3),
-		BPG("Basepage", 2),
-		BPX("Basepage, X-indexed", 2),
-		BPY("Basepage, Y-indexed", 2),
+		ZPG("Zeropage", 2),
+		ZPX("Zeropage, X-indexed", 2),
+		ZPY("Zeropage, Y-indexed", 2),
 		ABS("Absolute", 3),
 		ABX("Absolute, X-indexed", 3),
 		ABY("Absolute, Y-indexed", 3),
 		IMP("Implied", 1),
 		REL("Relative", 2),
-		REW("Relative (Word)", 3),
-		XIN("Indirect, X-indexed", 2),
+		XIN("X-indexed Indirect", 2),
 		INY("Indirect, Y-indexed", 2),
-		INZ("Indirect, Z-indexed", 2),
 		IND("Absolute Indirect", 3),
 		IAX("Absolute Indirect, X-indexed", 3),
-		IZB("Basepage Indirect", 2),
-		BPR("Basepage Relative", 3),
-		SAY("Stack Relative Indirect, Y-indexed", 2);
+		IZP("Zeropage Indirect", 2),
+		ZPR("Zeropage Relative", 3);
 
 		private final String text;
 		private final int length;
 
-		Mode(final String text, final int length) {
+		private Mode(final String text, final int length) {
 			this.text = text;
 			this.length = length;
 		}
@@ -68,88 +64,104 @@ public interface InstructionTable {
 		}
 	}
 
-	// 65CE02 opcodes.
+	// 65C02 opcodes.
 
 	/**
 	 * Instruction opcode names.
 	 */
 	String[] opcodeNames = {
-		"BRK", "ORA", "CLE", "SEE", "TSB", "ORA", "ASL", "RMB0", "PHP", "ORA", "ASL", "TSY", "TSB", "ORA", "ASL", "BBR0",
-		"BPL", "ORA", "ORA", "BPL", "TRB", "ORA", "ASL", "RMB1", "CLC", "ORA", "INC", "INZ", "TRB", "ORA", "ASL", "BBR1",
-		"JSR", "AND", "JSR", "JSR", "BIT", "AND", "ROL", "RMB2", "PLP", "AND", "ROL", "TYS", "BIT", "AND", "ROL", "BBR2",
-		"BMI", "AND", "AND", "BMI", "BIT", "AND", "ROL", "RMB3", "SEC", "AND", "DEC", "DEZ", "BIT", "AND", "ROL", "BBR3",
-		"RTI", "EOR", "NEG", "ASR", "ASR", "EOR", "LSR", "RMB4", "PHA", "EOR", "LSR", "TAZ", "JMP", "EOR", "LSR", "BBR4",
-		"BVC", "EOR", "EOR", "BVC", "ASR", "EOR", "LSR", "RMB5", "CLI", "EOR", "PHY", "TAB", "AUG", "EOR", "LSR", "BBR5",
-		"RTS", "ADC", "RTN", "BSR", "STZ", "ADC", "ROR", "RMB6", "PLA", "ADC", "ROR", "TZA", "JMP", "ADC", "ROR", "BBR6",
-		"BVS", "ADC", "ADC", "BVS", "STZ", "ADC", "ROR", "RMB7", "SEI", "ADC", "PLY", "TBA", "JMP", "ADC", "ROR", "BBR7",
-		"BRA", "STA", "STA", "BRA", "STY", "STA", "STX", "SMB0", "DEY", "BIT", "TXA", "STY", "STY", "STA", "STX", "BBS0",
-		"BCC", "STA", "STA", "BBC", "STY", "STA", "STX", "SMB1", "TYA", "STA", "TXS", "STZ", "STZ", "STA", "STZ", "BBS1",
-		"LDY", "LDA", "LDX", "LDZ", "LDY", "LDA", "LDX", "SMB2", "TAY", "LDA", "TAX", "LDZ", "LDY", "LDA", "LDX", "BBS2",
-		"BCS", "LDA", "LDA", "BCS", "LDY", "LDA", "LDX", "SMB3", "CLV", "LDA", "TSX", "LDZ", "LDY", "LDA", "LDX", "BBS3",
-		"CPY", "CMP", "CPZ", "DEW", "CPY", "CMP", "DEC", "SMB4", "INY", "CMP", "DEX", "ASW", "CPY", "CMP", "DEC", "BBS4",
-		"BNE", "CMP", "CMP", "BNE", "CPZ", "CMP", "DEC", "SMB5", "CLD", "CMP", "PHX", "PHZ", "CPZ", "CMP", "DEC", "BBS5",
-		"CPX", "SBC", "LDA", "INW", "CPX", "SBC", "INC", "SMB6", "INX", "SBC", "NOP", "ROW", "CPX", "SBC", "INC", "BBS6",
-		"BEQ", "SBC", "SBC", "BEQ", "PHW", "SBC", "INC", "SMB7", "SED", "SBC", "PLX", "PLZ", "PHW", "SBC", "INC", "BBS7"
+			"BRK", "ORA", "NOP", "NOP", "TSB", "ORA", "ASL", "NOP",
+			"PHP", "ORA", "ASL", "NOP", "TSB", "ORA", "ASL", "NOP",
+			"BPL", "ORA", "ORA", "NOP", "TRB", "ORA", "ASL", "NOP",
+			"CLC", "ORA", "INC", "NOP", "TRB", "ORA", "ASL", "NOP",
+			"JSR", "AND", "NOP", "NOP", "BIT", "AND", "ROL", "NOP",
+			"PLP", "AND", "ROL", "NOP", "BIT", "AND", "ROL", "NOP",
+			"BMI", "AND", "AND", "NOP", "BIT", "AND", "ROL", "NOP",
+			"SEC", "AND", "DEC", "NOP", "BIT", "AND", "ROL", "NOP",
+			"RTI", "EOR", "NOP", "NOP", "NOP", "EOR", "LSR", "NOP",
+			"PHA", "EOR", "LSR", "NOP", "JMP", "EOR", "LSR", "NOP",
+			"BVC", "EOR", "EOR", "NOP", "NOP", "EOR", "LSR", "NOP",
+			"CLI", "EOR", "PHY", "NOP", "NOP", "EOR", "LSR", "NOP",
+			"RTS", "ADC", "NOP", "NOP", "STZ", "ADC", "ROR", "NOP",
+			"PLA", "ADC", "ROR", "NOP", "JMP", "ADC", "ROR", "NOP",
+			"BVS", "ADC", "ADC", "NOP", "STZ", "ADC", "ROR", "NOP",
+			"SEI", "ADC", "PLY", "NOP", "JMP", "ADC", "ROR", "NOP",
+			"BRA", "STA", "NOP", "NOP", "STY", "STA", "STX", "NOP",
+			"DEY", "BIT", "TXA", "NOP", "STY", "STA", "STX", "NOP",
+			"BCC", "STA", "STA", "NOP", "STY", "STA", "STX", "NOP",
+			"TYA", "STA", "TXS", "NOP", "STZ", "STA", "STZ", "NOP",
+			"LDY", "LDA", "LDX", "NOP", "LDY", "LDA", "LDX", "NOP",
+			"TAY", "LDA", "TAX", "NOP", "LDY", "LDA", "LDX", "NOP",
+			"BCS", "LDA", "LDA", "NOP", "LDY", "LDA", "LDX", "NOP",
+			"CLV", "LDA", "TSX", "NOP", "LDY", "LDA", "LDX", "NOP",
+			"CPY", "CMP", "NOP", "NOP", "CPY", "CMP", "DEC", "NOP",
+			"INY", "CMP", "DEX", "NOP", "CPY", "CMP", "DEC", "NOP",
+			"BNE", "CMP", "CMP", "NOP", "NOP", "CMP", "DEC", "NOP",
+			"CLD", "CMP", "PHX", "NOP", "NOP", "CMP", "DEC", "NOP",
+			"CPX", "SBC", "NOP", "NOP", "CPX", "SBC", "INC", "NOP",
+			"INX", "SBC", "NOP", "NOP", "CPX", "SBC", "INC", "NOP",
+			"BEQ", "SBC", "SBC", "NOP", "NOP", "SBC", "INC", "NOP",
+			"SED", "SBC", "PLX", "NOP", "NOP", "SBC", "INC", "NOP"
 	};
 
 	/**
 	 * Instruction addressing modes.
 	 */
 	Mode[] instructionModes = {
-		Mode.IMP,Mode.XIN,Mode.IMP,Mode.IMP,Mode.BPG,Mode.BPG,Mode.BPG,Mode.BPG, // 0x00-0x07
-		Mode.IMP,Mode.IMM,Mode.ACC,Mode.IMP,Mode.ABS,Mode.ABS,Mode.ABS,Mode.BPR, // 0x08-0x0f
-		Mode.REL,Mode.INY,Mode.INZ,Mode.REW,Mode.BPG,Mode.BPX,Mode.BPX,Mode.BPG, // 0x10-0x17
-		Mode.IMP,Mode.ABY,Mode.ACC,Mode.IMP,Mode.ABS,Mode.ABX,Mode.ABX,Mode.BPR, // 0x18-0x1f
-		Mode.ABS,Mode.XIN,Mode.IND,Mode.IAX,Mode.BPG,Mode.BPG,Mode.BPG,Mode.BPG, // 0x20-0x27
-		Mode.IMP,Mode.IMM,Mode.ACC,Mode.IMP,Mode.ABS,Mode.ABS,Mode.ABS,Mode.BPR, // 0x28-0x2f
-		Mode.REL,Mode.INY,Mode.INZ,Mode.REW,Mode.BPX,Mode.BPX,Mode.BPX,Mode.BPG, // 0x30-0x37
-		Mode.IMP,Mode.ABY,Mode.ACC,Mode.IMP,Mode.ABX,Mode.ABX,Mode.ABX,Mode.BPR, // 0x38-0x3f
-		Mode.IMP,Mode.XIN,Mode.ACC,Mode.BPG,Mode.BPG,Mode.BPG,Mode.BPG,Mode.BPG, // 0x40-0x47
-		Mode.IMP,Mode.IMM,Mode.ACC,Mode.IMP,Mode.ABS,Mode.ABS,Mode.ABS,Mode.BPR, // 0x48-0x4f
-		Mode.REL,Mode.INY,Mode.INZ,Mode.REW,Mode.BPX,Mode.BPX,Mode.BPX,Mode.BPG, // 0x50-0x57
-		Mode.IMP,Mode.ABY,Mode.IMP,Mode.IMP,Mode.IMP,Mode.ABX,Mode.ABX,Mode.BPR, // 0x58-0x5f
-		Mode.IMP,Mode.XIN,Mode.IMM,Mode.REW,Mode.BPG,Mode.BPG,Mode.BPG,Mode.BPG, // 0x60-0x67
-		Mode.IMP,Mode.IMM,Mode.ACC,Mode.IMP,Mode.IND,Mode.ABS,Mode.ABS,Mode.BPR, // 0x68-0x6f
-		Mode.REL,Mode.INY,Mode.INZ,Mode.REW,Mode.BPX,Mode.BPX,Mode.BPX,Mode.BPG, // 0x70-0x77
-		Mode.IMP,Mode.ABY,Mode.IMP,Mode.IMP,Mode.IAX,Mode.ABX,Mode.ABX,Mode.BPR, // 0x78-0x7f
-		Mode.REL,Mode.XIN,Mode.SAY,Mode.REW,Mode.BPG,Mode.BPG,Mode.BPG,Mode.BPG, // 0x80-0x87
-		Mode.IMP,Mode.IMM,Mode.IMP,Mode.ABX,Mode.ABS,Mode.ABS,Mode.ABS,Mode.BPR, // 0x88-0x8f
-		Mode.REL,Mode.INY,Mode.INZ,Mode.REW,Mode.BPX,Mode.BPX,Mode.BPY,Mode.BPG, // 0x90-0x97
-		Mode.IMP,Mode.ABY,Mode.IMP,Mode.ABY,Mode.ABS,Mode.ABX,Mode.ABX,Mode.BPR, // 0x98-0x9f
-		Mode.IMM,Mode.XIN,Mode.IMM,Mode.IMM,Mode.BPG,Mode.BPG,Mode.BPG,Mode.BPG, // 0xa0-0xa7
-		Mode.IMP,Mode.IMM,Mode.IMP,Mode.ABS,Mode.ABS,Mode.ABS,Mode.ABS,Mode.BPR, // 0xa8-0xaf
-		Mode.REL,Mode.INY,Mode.INZ,Mode.REW,Mode.BPX,Mode.BPX,Mode.BPY,Mode.BPG, // 0xb0-0xb7
-		Mode.IMP,Mode.ABY,Mode.IMP,Mode.ABX,Mode.ABX,Mode.ABX,Mode.ABY,Mode.BPR, // 0xb8-0xbf
-		Mode.IMM,Mode.XIN,Mode.IMM,Mode.BPG,Mode.BPG,Mode.BPG,Mode.BPG,Mode.BPG, // 0xc0-0xc7
-		Mode.IMP,Mode.IMM,Mode.IMP,Mode.ABS,Mode.ABS,Mode.ABS,Mode.ABS,Mode.BPR, // 0xc8-0xcf
-		Mode.REL,Mode.INY,Mode.INZ,Mode.REW,Mode.BPX,Mode.BPX,Mode.BPX,Mode.BPG, // 0xd0-0xd7
-		Mode.IMP,Mode.ABY,Mode.IMP,Mode.IMP,Mode.ABS,Mode.ABX,Mode.ABX,Mode.BPR, // 0xd8-0xdf
-		Mode.IMM,Mode.XIN,Mode.SAY,Mode.BPG,Mode.BPG,Mode.BPG,Mode.BPG,Mode.BPG, // 0xe0-0xe7
-		Mode.IMP,Mode.IMM,Mode.IMP,Mode.ABS,Mode.ABS,Mode.ABS,Mode.ABS,Mode.BPR, // 0xe8-0xef
-		Mode.REL,Mode.INY,Mode.INZ,Mode.IMW,Mode.BPX,Mode.BPX,Mode.BPX,Mode.BPG, // 0xf0-0xf7
-		Mode.IMP,Mode.ABY,Mode.IMP,Mode.ABS,Mode.ABS,Mode.ABX,Mode.ABX,Mode.BPR  // 0xf8-0xff
+			Mode.IMP,Mode.XIN,Mode.IMM,Mode.IMP,Mode.ZPG,Mode.ZPG,Mode.ZPG,Mode.IMP, // 0x00-0x07
+			Mode.IMP,Mode.IMM,Mode.ACC,Mode.IMP,Mode.ABS,Mode.ABS,Mode.ABS,Mode.IMP, // 0x08-0x0f
+			Mode.REL,Mode.INY,Mode.IZP,Mode.IMP,Mode.ZPG,Mode.ZPX,Mode.ZPX,Mode.IMP, // 0x10-0x17
+			Mode.IMP,Mode.ABY,Mode.ACC,Mode.IMP,Mode.ABS,Mode.ABX,Mode.ABX,Mode.IMP, // 0x18-0x1f
+			Mode.ABS,Mode.XIN,Mode.IMM,Mode.IMP,Mode.ZPG,Mode.ZPG,Mode.ZPG,Mode.IMP, // 0x20-0x27
+			Mode.IMP,Mode.IMM,Mode.ACC,Mode.IMP,Mode.ABS,Mode.ABS,Mode.ABS,Mode.IMP, // 0x28-0x2f
+			Mode.REL,Mode.INY,Mode.IZP,Mode.IMP,Mode.ZPX,Mode.ZPX,Mode.ZPX,Mode.IMP, // 0x30-0x37
+			Mode.IMP,Mode.ABY,Mode.ACC,Mode.IMP,Mode.ABX,Mode.ABX,Mode.ABX,Mode.IMP, // 0x38-0x3f
+			Mode.IMP,Mode.XIN,Mode.IMM,Mode.IMP,Mode.IMM,Mode.ZPG,Mode.ZPG,Mode.IMP, // 0x40-0x47
+			Mode.IMP,Mode.IMM,Mode.ACC,Mode.IMP,Mode.ABS,Mode.ABS,Mode.ABS,Mode.IMP, // 0x48-0x4f
+			Mode.REL,Mode.INY,Mode.IZP,Mode.IMP,Mode.IMM,Mode.ZPX,Mode.ZPX,Mode.IMP, // 0x50-0x57
+			Mode.IMP,Mode.ABY,Mode.IMP,Mode.IMP,Mode.ABS,Mode.ABX,Mode.ABX,Mode.IMP, // 0x58-0x5f
+			Mode.IMP,Mode.XIN,Mode.IMM,Mode.IMP,Mode.ZPG,Mode.ZPG,Mode.ZPG,Mode.IMP, // 0x60-0x67
+			Mode.IMP,Mode.IMM,Mode.ACC,Mode.IMP,Mode.IND,Mode.ABS,Mode.ABS,Mode.IMP, // 0x68-0x6f
+			Mode.REL,Mode.INY,Mode.IZP,Mode.IMP,Mode.ZPX,Mode.ZPX,Mode.ZPX,Mode.IMP, // 0x70-0x77
+			Mode.IMP,Mode.ABY,Mode.IMP,Mode.IMP,Mode.IAX,Mode.ABX,Mode.ABX,Mode.IMP, // 0x78-0x7f
+			Mode.REL,Mode.XIN,Mode.IMM,Mode.IMP,Mode.ZPG,Mode.ZPG,Mode.ZPG,Mode.IMP, // 0x80-0x87
+			Mode.IMP,Mode.IMM,Mode.IMP,Mode.IMP,Mode.ABS,Mode.ABS,Mode.ABS,Mode.IMP, // 0x88-0x8f
+			Mode.REL,Mode.INY,Mode.IZP,Mode.IMP,Mode.ZPX,Mode.ZPX,Mode.ZPY,Mode.IMP, // 0x90-0x97
+			Mode.IMP,Mode.ABY,Mode.IMP,Mode.IMP,Mode.ABS,Mode.ABX,Mode.ABX,Mode.IMP, // 0x98-0x9f
+			Mode.IMM,Mode.XIN,Mode.IMM,Mode.IMP,Mode.ZPG,Mode.ZPG,Mode.ZPG,Mode.IMP, // 0xa0-0xa7
+			Mode.IMP,Mode.IMM,Mode.IMP,Mode.IMP,Mode.ABS,Mode.ABS,Mode.ABS,Mode.IMP, // 0xa8-0xaf
+			Mode.REL,Mode.INY,Mode.IZP,Mode.IMP,Mode.ZPX,Mode.ZPX,Mode.ZPY,Mode.IMP, // 0xb0-0xb7
+			Mode.IMP,Mode.ABY,Mode.IMP,Mode.IMP,Mode.ABX,Mode.ABX,Mode.ABY,Mode.IMP, // 0xb8-0xbf
+			Mode.IMM,Mode.XIN,Mode.IMM,Mode.IMP,Mode.ZPG,Mode.ZPG,Mode.ZPG,Mode.IMP, // 0xc0-0xc7
+			Mode.IMP,Mode.IMM,Mode.IMP,Mode.IMP,Mode.ABS,Mode.ABS,Mode.ABS,Mode.IMP, // 0xc8-0xcf
+			Mode.REL,Mode.INY,Mode.IZP,Mode.IMP,Mode.IMM,Mode.ZPX,Mode.ZPX,Mode.IMP, // 0xd0-0xd7
+			Mode.IMP,Mode.ABY,Mode.IMP,Mode.IMP,Mode.IMP,Mode.ABX,Mode.ABX,Mode.IMP, // 0xd8-0xdf
+			Mode.IMM,Mode.XIN,Mode.IMM,Mode.IMP,Mode.ZPG,Mode.ZPG,Mode.ZPG,Mode.IMP, // 0xe0-0xe7
+			Mode.IMP,Mode.IMM,Mode.IMP,Mode.IMP,Mode.ABS,Mode.ABS,Mode.ABS,Mode.IMP, // 0xe8-0xef
+			Mode.REL,Mode.INY,Mode.IZP,Mode.IMP,Mode.IMM,Mode.ZPX,Mode.ZPX,Mode.IMP, // 0xf0-0xf7
+			Mode.IMP,Mode.ABY,Mode.IMP,Mode.IMP,Mode.ABS,Mode.ABX,Mode.ABX,Mode.IMP  // 0xf8-0xff
 	};
 
 	/**
 	 * Number of clock cycles required for each instruction
 	 */
 	int[] instructionClocks = {
-		2, 2, 1, 1, 2, 2, 2, 2, 1, 2, 1, 1, 3, 3, 3, 3,
-		2, 2, 2, 3, 2, 2, 2, 2, 1, 3, 1, 1, 3, 3, 3, 3,
-		3, 2, 3, 3, 2, 2, 2, 2, 1, 2, 1, 1, 3, 3, 3, 3,
-		2, 2, 2, 3, 2, 2, 2, 2, 1, 3, 1, 1, 3, 3, 3, 3,
-		1, 2, 1, 1, 2, 2, 2, 2, 1, 2, 1, 1, 3, 3, 3, 3,
-		2, 2, 2, 3, 2, 2, 2, 2, 1, 3, 1, 1, 4, 3, 3, 3,
-		1, 2, 2, 3, 2, 2, 2, 2, 1, 2, 1, 1, 3, 3, 3, 3,
-		2, 2, 2, 3, 2, 2, 2, 2, 1, 3, 1, 1, 3, 3, 3, 3,
-		2, 2, 2, 3, 2, 2, 2, 2, 1, 2, 1, 3, 3, 3, 3, 3,
-		2, 2, 2, 3, 2, 2, 2, 2, 1, 3, 1, 3, 3, 3, 3, 3,
-		2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 1, 3, 3, 3, 3, 3,
-		2, 2, 2, 3, 2, 2, 2, 2, 1, 3, 1, 3, 3, 3, 3, 3,
-		2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 1, 3, 3, 3, 3, 3,
-		2, 2, 2, 3, 2, 2, 2, 2, 1, 3, 1, 1, 3, 3, 3, 3,
-		2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 1, 3, 3, 3, 3, 3,
-		2, 2, 2, 3, 3, 2, 2, 2, 1, 3, 1, 1, 3, 3, 3, 3
+			7, 6, 2, 1, 5, 3, 5, 1, 3, 2, 2, 1, 6, 4, 6, 1,
+			2, 5, 5, 1, 5, 4, 6, 1, 2, 4, 2, 1, 6, 4, 6, 1,
+			6, 6, 2, 1, 3, 3, 5, 1, 4, 2, 2, 1, 4, 4, 6, 1,
+			2, 5, 5, 1, 4, 4, 6, 1, 2, 4, 2, 1, 4, 4, 6, 1,
+			6, 6, 2, 1, 3, 3, 5, 1, 3, 2, 2, 1, 3, 4, 6, 1,
+			2, 5, 5, 1, 4, 4, 6, 1, 2, 4, 3, 1, 8, 4, 6, 1,
+			6, 6, 2, 1, 3, 3, 5, 1, 4, 2, 2, 1, 6, 4, 6, 1,
+			2, 5, 5, 1, 4, 4, 6, 1, 2, 4, 4, 1, 6, 4, 6, 1,
+			3, 6, 2, 1, 3, 3, 3, 1, 2, 2, 2, 1, 4, 4, 4, 1,
+			2, 6, 5, 1, 4, 4, 4, 1, 2, 5, 2, 1, 4, 5, 5, 1,
+			2, 6, 2, 1, 3, 3, 3, 1, 2, 2, 2, 1, 4, 4, 4, 1,
+			2, 5, 5, 1, 4, 4, 4, 1, 2, 4, 2, 1, 4, 4, 4, 1,
+			2, 6, 2, 1, 3, 3, 5, 1, 2, 2, 2, 1, 4, 4, 6, 1,
+			2, 5, 5, 1, 4, 4, 6, 1, 2, 4, 3, 1, 4, 4, 7, 1,
+			2, 6, 2, 1, 3, 3, 5, 1, 2, 2, 2, 1, 4, 4, 6, 1,
+			2, 5, 5, 1, 4, 4, 6, 1, 2, 4, 4, 1, 4, 4, 7, 1
 	};
 
 }

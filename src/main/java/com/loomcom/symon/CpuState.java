@@ -35,11 +35,6 @@ public class CpuState {
 	public int a;
 
 	/**
-	 * Base Page
-	 */
-	public int b;
-
-	/**
 	 * X index regsiter
 	 */
 	public int x;
@@ -48,11 +43,6 @@ public class CpuState {
 	 * Y index register
 	 */
 	public int y;
-
-	/**
-	 * Z index register
-	 */
-	public int z;
 
 	/**
 	 * Stack Pointer
@@ -85,7 +75,6 @@ public class CpuState {
 	public boolean irqDisableFlag;
 	public boolean decimalModeFlag;
 	public boolean breakFlag;
-	public boolean extendFlag;
 	public boolean overflowFlag;
 	public boolean negativeFlag;
 
@@ -102,7 +91,7 @@ public class CpuState {
 	 */
 	public String toTraceEvent() {
 		String opcode = Cpu.disassembleOp(ir, args);
-		return getInstructionByteStatus() + "  " + String.format("%-14s", opcode) + "A:" + Utils.byteToHex(a) + " " + "B:" + Utils.byteToHex(b) + " "  + "X:" + Utils.byteToHex(x) + " " + "Y:" + Utils.byteToHex(y) + "Z:" + " " + Utils.byteToHex(z) + " " + "F:" + Utils.byteToHex(getStatusFlag()) + " " + "S:1" + Utils.byteToHex(sp) + " " + getProcessorStatusString();
+		return getInstructionByteStatus() + "  " + String.format("%-14s", opcode) + "A:" + Utils.byteToHex(a) + " " + "X:" + Utils.byteToHex(x) + " " + "Y:" + Utils.byteToHex(y) +  " " + "F:" + Utils.byteToHex(getStatusFlag()) + " " + "S:1" + Utils.byteToHex(sp) + " " + getProcessorStatusString();
 	}
 
 	/**
@@ -124,9 +113,6 @@ public class CpuState {
 		}
 		if (breakFlag) {
 			status |= Cpu.P_BREAK;
-		}
-		if (extendFlag) {
-			status |= Cpu.P_EXTEND;
 		}
 		if (overflowFlag) {
 			status |= Cpu.P_OVERFLOW;
@@ -155,6 +141,6 @@ public class CpuState {
 	 * @return A string representing the current status register state.
 	 */
 	public String getProcessorStatusString() {
-		return "[" + (negativeFlag ? 'N' : '.') + (overflowFlag ? 'V' : '.') + "-" + (extendFlag ? 'E' : '.') + "-" + (breakFlag ? 'B' : '.') + (decimalModeFlag ? 'D' : '.') + (irqDisableFlag ? 'I' : '.') + (zeroFlag ? 'Z' : '.') + (carryFlag ? 'C' : '.') + "]";
+		return "[" + (negativeFlag ? 'N' : '.') + (overflowFlag ? 'V' : '.') + "-" + (breakFlag ? 'B' : '.') + (decimalModeFlag ? 'D' : '.') + (irqDisableFlag ? 'I' : '.') + (zeroFlag ? 'Z' : '.') + (carryFlag ? 'C' : '.') + "]";
 	}
 }

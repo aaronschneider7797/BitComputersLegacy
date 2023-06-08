@@ -35,7 +35,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import scala.Option;
 
-@Architecture.Name("65CE02")
+@Architecture.Name("65C02")
 public class BitComputersArchitecture implements Architecture {
 	private final Machine machine;
 
@@ -234,13 +234,11 @@ public class BitComputersArchitecture implements Architecture {
 			CpuState cpuState = mCPU.getCpuState();
 			NBTTagCompound cpuTag = nbt.getCompoundTag("cpu");
 			cpuState.a = cpuTag.getInteger("rA");
-			cpuState.b = cpuTag.getInteger("rB");
 			mCPU.setProcessorStatus(cpuTag.getInteger("rP"));
 			cpuState.pc = cpuTag.getInteger("rPC");
 			cpuState.sp = cpuTag.getInteger("rSP");
 			cpuState.x = cpuTag.getInteger("rX");
 			cpuState.y = cpuTag.getInteger("rY");
-			cpuState.z = cpuTag.getInteger("rZ");
 			cpuState.irqAsserted = cpuTag.getBoolean("iI");
 			cpuState.nmiAsserted = cpuTag.getBoolean("iN");
 			cpuState.dead = cpuTag.getBoolean("sD");
@@ -291,13 +289,11 @@ public class BitComputersArchitecture implements Architecture {
 		CpuState cpuState = mCPU.getCpuState();
 		NBTTagCompound cpuTag = new NBTTagCompound();
 		cpuTag.setInteger("rA", cpuState.a);
-		cpuTag.setInteger("rB", cpuState.b);
 		cpuTag.setInteger("rP", mCPU.getProcessorStatus());
 		cpuTag.setInteger("rPC", cpuState.pc);
 		cpuTag.setInteger("rSP", cpuState.sp);
 		cpuTag.setInteger("rX", cpuState.x);
 		cpuTag.setInteger("rY", cpuState.y);
-		cpuTag.setInteger("rZ", cpuState.z);
 		cpuTag.setBoolean("iI", cpuState.irqAsserted);
 		cpuTag.setBoolean("iN", cpuState.nmiAsserted);
 		cpuTag.setBoolean("sD", cpuState.dead);

@@ -18,8 +18,8 @@ import net.minecraftforge.common.config.Configuration;
 
 @Mod(modid = BitComputers.MODID, name = BitComputers.NAME, version = BitComputers.VERSION, dependencies = "required-after:opencomputers@[1.7.5,)")
 public class BitComputers {
-	public static final String MODID = "bitcomputers";
-	public static final String NAME = "BitComputers";
+	public static final String MODID = "bitcomputerslegacy";
+	public static final String NAME = "BitComputers Legacy";
 	public static final String VERSION = "1.2.0";
 
 	public static Logger log;

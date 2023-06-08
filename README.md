@@ -1,7 +1,7 @@
-BitComputers
+BitComputers Legacy
 ================
 
-A 65CE02 arcitecture for OpenComputers. Drived from Thistle. Created by [gamax92](https://github.com/gamax92).
+A 65C02 arcitecture for OpenComputers. Drived from Thistle. Created by [gamax92](https://github.com/gamax92).
 
 Uses a heavily modified/converted [Symon](https://github.com/sethm/symon) core by [Seth J. Morabito](http://loomcom.com/).
 

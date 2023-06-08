@@ -29,8 +29,8 @@ import net.berrycompany.bitcomputers.BitComputers;
 import net.berrycompany.bitcomputers.BitComputersConfig;
 
 /**
- * This class provides a simulation of the CSG 65CE02 CPU's state machine.
- * A simple interface allows this 65CE02 to read and write to a simulated bus,
+ * This class provides a simulation of the WDC 65C02 CPU's state machine.
+ * A simple interface allows this 65C02 to read and write to a simulated bus,
  * and exposes some of the internal state for inspection and debugging.
  */
 @SuppressWarnings("unused")
@@ -42,7 +42,7 @@ public class Cpu implements InstructionTable {
 	public static final int P_IRQ_DISABLE = 0x04;
 	public static final int P_DECIMAL = 0x08;
 	public static final int P_BREAK = 0x10;
-	public static final int P_EXTEND = 0x20;
+	// Bit 5 is always '1'
 	public static final int P_OVERFLOW = 0x40;
 	public static final int P_NEGATIVE = 0x80;
 
@@ -86,7 +86,7 @@ public class Cpu implements InstructionTable {
 		/* TODO: In reality, the stack pointer could be anywhere
 		   on the stack after reset. This non-deterministic behavior might be
 		   worth while to simulate. */
-		state.sp = 0xffff;
+		state.sp = 0xff;
 
 		// Set the PC to the address stored in the reset vector
 		state.pc = Utils.address(bus.read(RST_VECTOR_L), bus.read(RST_VECTOR_H));
@@ -100,7 +100,6 @@ public class Cpu implements InstructionTable {
 		state.irqDisableFlag = false;
 		state.decimalModeFlag = false;
 		state.breakFlag = false;
-		state.extendFlag = false;
 		state.overflowFlag = false;
 		state.negativeFlag = false;
 
@@ -114,10 +113,8 @@ public class Cpu implements InstructionTable {
 
 		// Reset registers.
 		state.a = 0;
-		state.b = 0;
 		state.x = 0;
 		state.y = 0;
-		state.z = 0;
 	}
 
 	public void step(int num) {
@@ -137,7 +134,6 @@ public class Cpu implements InstructionTable {
 	/**
 	 * Performs an individual instruction cycle.
 	 */
-	@SuppressWarnings("DuplicateBranchesInSwitch")
 	public void step() {
 		// Store the address from which the IR was read, for debugging
 		state.lastPc = state.pc;
@@ -181,780 +177,542 @@ public class Cpu implements InstructionTable {
 		int effectiveAddress = 0;
 		int tmp; // Temporary storage
 
-		int lo;
-		int hi;
-
 		switch (Cpu.instructionModes[state.ir]) {
-		case ACC: // Accumulator
-		case IMM: // #Immediate
-		case IMW: // #Immediate (word)
-		case IMP: // Implied
-		case REL: // Relative
-		case REW: // Relative (word)
-		case BPR: // Base Page Relative
-			effectiveAddress = state.b;
-			break;
-		case BPG: // Base Page
-			effectiveAddress = Utils.address(state.args[0], state.b) & 0xff;
-			break;
-		case BPX: // Base Page,X
-			effectiveAddress = Utils.address((state.args[0] + state.x), state.b) & 0xff;
-			break;
-		case BPY: // Base Page,Y
-			effectiveAddress = Utils.address((state.args[0] + state.y), state.b) & 0xff;
-			break;
-		case ABS: // Absolute
-			effectiveAddress = Utils.address(state.args[0], state.args[1]);
-			break;
-		case ABX: // Absolute,X
-			effectiveAddress = (Utils.address(state.args[0], state.args[1]) + state.x) & 0xffff;
-			break;
-		case ABY: // Absolute,Y
-			effectiveAddress = (Utils.address(state.args[0], state.args[1]) + state.y) & 0xffff;
-			break;
-		case SAY: // Stack Relative,Y
-			tmp = state.args[1] + ((state.sp >> 8) & 0xffff);
-			effectiveAddress = (Utils.address(state.args[0], tmp) + state.y) & 0xffff;
-			break;
-		case XIN: // (Base Page,X)
-			tmp = (state.args[0] + state.x) & 0xff;
-			effectiveAddress = Utils.address(bus.read(tmp), bus.read(tmp + state.b));
-			break;
-		case INY: // (Base Page),Y
-			tmp = Utils.address(bus.read(state.args[0]), bus.read((state.args[0] + state.b) & 0xff));
-			effectiveAddress = (tmp + state.y) & 0xffff;
-			break;
-		case INZ: // (Base Page),Z
-			tmp = Utils.address(bus.read(state.args[0]), bus.read((state.args[0] + state.b) & 0xff));
-			effectiveAddress = (tmp + state.z) & 0xffff;
-			break;
-		case IND: // (Absolute)
-			tmp = Utils.address(state.args[0], state.args[1]);
-			effectiveAddress = Utils.address(bus.read(tmp), bus.read(tmp + 1));
-			break;
-		case IAX: // (Absolute,X)
-			tmp = (Utils.address(state.args[0], state.args[1]) + state.x) & 0xffff;
-			effectiveAddress = Utils.address(bus.read(tmp), bus.read(tmp + 1));
-			break;
-		case IZB: // (Base Page)
-			effectiveAddress = Utils.address(bus.read(state.args[0]), bus.read((state.args[0] + state.b) & 0xff));
-			break;
+			case ACC: // Accumulator
+			case IMM: // #Immediate
+			case IMP: // Implied
+			case REL: // Relative
+			case ZPR: // Zero Page Relative
+				// Not Applicable
+				break;
+			case ZPG: // Zero Page
+				effectiveAddress = state.args[0];
+				break;
+			case ZPX: // Zero Page,X
+				effectiveAddress = (state.args[0] + state.x) & 0xff;
+				break;
+			case ZPY: // Zero Page,Y
+				effectiveAddress = (state.args[0] + state.y) & 0xff;
+				break;
+			case ABS: // Absolute
+				effectiveAddress = Utils.address(state.args[0], state.args[1]);
+				break;
+			case ABX: // Absolute,X
+				effectiveAddress = (Utils.address(state.args[0], state.args[1]) + state.x) & 0xffff;
+				break;
+			case ABY: // Absolute,Y
+				effectiveAddress = (Utils.address(state.args[0], state.args[1]) + state.y) & 0xffff;
+				break;
+			case XIN: // (Zero Page,X)
+				tmp = (state.args[0] + state.x) & 0xff;
+				effectiveAddress = Utils.address(bus.read(tmp), bus.read(tmp + 1));
+				break;
+			case INY: // (Zero Page),Y
+				tmp = Utils.address(bus.read(state.args[0]), bus.read((state.args[0] + 1) & 0xff));
+				effectiveAddress = (tmp + state.y) & 0xffff;
+				break;
+			case IND: // (Absolute)
+				tmp = Utils.address(state.args[0], state.args[1]);
+				effectiveAddress = Utils.address(bus.read(tmp), bus.read(tmp + 1));
+				break;
+			case IAX: // (Absolute,X)
+				tmp = (Utils.address(state.args[0], state.args[1]) + state.x) & 0xffff;
+				effectiveAddress = Utils.address(bus.read(tmp), bus.read(tmp + 1));
+				break;
+			case IZP: // (Zero Page)
+				effectiveAddress = Utils.address(bus.read(state.args[0]), bus.read((state.args[0] + 1) & 0xff));
+				break;
 		}
 
 		// Execute
 		switch (state.ir) {
 
-		/* Single Byte Instructions **/
-		case 0x00: // BRK - Force Interrupt - Implied
-			handleBrk(state.pc + 1);
-			break;
-		case 0x08: // PHP - Push Processor Status - Implied
-			// Break flag is always set in the stack value.
-			stackPush(state.getStatusFlag() | 0x10);
-			break;
-		case 0x10: // BPL - Branch if Positive - Relative
-			if (!getNegativeFlag()) {
+			/* Single Byte Instructions **/
+			case 0x00: // BRK - Force Interrupt - Implied
+				handleBrk(state.pc + 1);
+				break;
+			case 0x08: // PHP - Push Processor Status - Implied
+				// Break flag is always set in the stack value.
+				stackPush(state.getStatusFlag() | 0x10);
+				break;
+			case 0x10: // BPL - Branch if Positive - Relative
+				if (!getNegativeFlag()) {
+					state.pc = relAddress(state.args[0]);
+				}
+				break;
+			case 0x18: // CLC - Clear Carry Flag - Implied
+				clearCarryFlag();
+				break;
+			case 0x20: // JSR - Jump to Subroutine - Absolute
+				stackPush((state.pc - 1 >> 8) & 0xff); // PC high byte
+				stackPush(state.pc - 1 & 0xff); // PC low byte
+				state.pc = Utils.address(state.args[0], state.args[1]);
+				break;
+			case 0x28: // PLP - Pull Processor Status - Implied
+				setProcessorStatus(stackPop());
+				break;
+			case 0x30: // BMI - Branch if Minus - Relative
+				if (getNegativeFlag()) {
+					state.pc = relAddress(state.args[0]);
+				}
+				break;
+			case 0x38: // SEC - Set Carry Flag - Implied
+				setCarryFlag();
+				break;
+			case 0x40: // RTI - Return from Interrupt - Implied
+				setProcessorStatus(stackPop());
+				int lo = stackPop();
+				int hi = stackPop();
+				setProgramCounter(Utils.address(lo, hi));
+				break;
+			case 0x48: // PHA - Push Accumulator - Implied
+				stackPush(state.a);
+				break;
+			case 0x50: // BVC - Branch if Overflow Clear - Relative
+				if (!getOverflowFlag()) {
+					state.pc = relAddress(state.args[0]);
+				}
+				break;
+			case 0x58: // CLI - Clear Interrupt Disable - Implied
+				clearIrqDisableFlag();
+				break;
+			case 0x5a: // PHY - Push Y Register - Implied
+				stackPush(state.y);
+				break;
+			case 0x60: // RTS - Return from Subroutine - Implied
+				lo = stackPop();
+				hi = stackPop();
+				setProgramCounter((Utils.address(lo, hi) + 1) & 0xffff);
+				break;
+			case 0x68: // PLA - Pull Accumulator - Implied
+				state.a = stackPop();
+				setArithmeticFlags(state.a);
+				break;
+			case 0x70: // BVS - Branch if Overflow Set - Relative
+				if (getOverflowFlag()) {
+					state.pc = relAddress(state.args[0]);
+				}
+				break;
+			case 0x78: // SEI - Set Interrupt Disable - Implied
+				setIrqDisableFlag();
+				break;
+			case 0x7a: // PLY - Pull Y Register - Implied
+				state.y = stackPop();
+				setArithmeticFlags(state.y);
+				break;
+			case 0x80: // BRA - Branch Always - Relative
 				state.pc = relAddress(state.args[0]);
-			}
-			break;
-		case 0x18: // CLC - Clear Carry Flag - Implied
-			clearCarryFlag();
-			break;
-		case 0x20: // JSR - Jump to Subroutine - Absolute
-		case 0x22: // JSR - Jump to Subroutine - Absolute Indirect
-		case 0x23: // JSR - Jump to Subroutine - Absolute X-Indexed Indirect
-			stackPush((state.pc - 1 >> 8) & 0xff); // PC high byte
-			stackPush(state.pc - 1 & 0xff); // PC low byte
-			state.pc = Utils.address(state.args[0], state.args[1]);
-			break;
-		case 0x28: // PLP - Pull Processor Status - Implied
-			setProcessorStatus(stackPop());
-			break;
-		case 0x30: // BMI - Branch if Minus - Relative
-			if (getNegativeFlag()) {
-				state.pc = relAddress(state.args[0]);
-			}
-			break;
-		case 0x38: // SEC - Set Carry Flag - Implied
-			setCarryFlag();
-			break;
-		case 0x40: // RTI - Return from Interrupt - Implied
-			setProcessorStatus(stackPop());
-			lo = stackPop();
-			hi = stackPop();
-			setProgramCounter(Utils.address(lo, hi));
-			break;
-		case 0x48: // PHA - Push Accumulator - Implied
-			stackPush(state.a);
-			break;
-		case 0x50: // BVC - Branch if Overflow Clear - Relative
-			if (!getOverflowFlag()) {
-				state.pc = relAddress(state.args[0]);
-			}
-			break;
-		case 0x58: // CLI - Clear Interrupt Disable - Implied
-			clearIrqDisableFlag();
-			break;
-		case 0x5a: // PHY - Push Y Register - Implied
-			stackPush(state.y);
-			break;
-		case 0x60: // RTS - Return from Subroutine - Implied
-			lo = stackPop();
-			hi = stackPop();
-			setProgramCounter((Utils.address(lo, hi) + 1) & 0xffff);
-			break;
-		case 0x68: // PLA - Pull Accumulator - Implied
-			state.a = stackPop();
-			setArithmeticFlags(state.a);
-			break;
-		case 0x70: // BVS - Branch if Overflow Set - Relative
-			if (getOverflowFlag()) {
-				state.pc = relAddress(state.args[0]);
-			}
-			break;
-		case 0x78: // SEI - Set Interrupt Disable - Implied
-			setIrqDisableFlag();
-			break;
-		case 0x7a: // PLY - Pull Y Register - Implied
-			state.y = stackPop();
-			setArithmeticFlags(state.y);
-			break;
-		case 0x80: // BRA - Branch Always - Relative
-			state.pc = relAddress(state.args[0]);
-			break;
-		case 0x88: // DEY - Decrement Y Register - Implied
-			state.y = --state.y & 0xff;
-			setArithmeticFlags(state.y);
-			break;
-		case 0x8a: // TXA - Transfer X to Accumulator - Implied
-			state.a = state.x;
-			setArithmeticFlags(state.a);
-			break;
-		case 0x90: // BCC - Branch if Carry Clear - Relative
-			if (!getCarryFlag()) {
-				state.pc = relAddress(state.args[0]);
-			}
-			break;
-		case 0x98: // TYA - Transfer Y to Accumulator - Implied
-			state.a = state.y;
-			setArithmeticFlags(state.a);
-			break;
-		case 0x9a: // TXS - Transfer X to Stack Pointer - Implied
-			setStackPointer(state.x);
-			break;
-		case 0xa8: // TAY - Transfer Accumulator to Y - Implied
-			state.y = state.a;
-			setArithmeticFlags(state.y);
-			break;
-		case 0xaa: // TAX - Transfer Accumulator to X - Implied
-			state.x = state.a;
-			setArithmeticFlags(state.x);
-			break;
-		case 0xb0: // BCS - Branch if Carry Set - Relative
-			if (getCarryFlag()) {
-				state.pc = relAddress(state.args[0]);
-			}
-			break;
-		case 0xb8: // CLV - Clear Overflow Flag - Implied
-			clearOverflowFlag();
-			break;
-		case 0xba: // TSX - Transfer Stack Pointer to X - Implied
-			state.x = getStackPointer();
-			setArithmeticFlags(state.x);
-			break;
-		case 0xc8: // INY - Increment Y Register - Implied
-			state.y = ++state.y & 0xff;
-			setArithmeticFlags(state.y);
-			break;
-		case 0xca: // DEX - Decrement X Register - Implied
-			state.x = --state.x & 0xff;
-			setArithmeticFlags(state.x);
-			break;
-		case 0xcb: // ASW - Arithmetic Shift Left Word
-			state.a = asw(state.a);
-			setArithmeticFlags(state.a);
-			break;
-		case 0xd0: // BNE - Branch if Not Equal to Zero - Relative
-			if (!getZeroFlag()) {
-				state.pc = relAddress(state.args[0]);
-			}
-			break;
-		case 0xd8: // CLD - Clear Decimal Mode - Implied
-			clearDecimalModeFlag();
-			break;
-		case 0xda: // PHX - Push X Register - Implied
-			stackPush(state.x);
-			break;
-		case 0xdb: // PHZ - Push Z Register - Implied
-			stackPush(state.z);
-			break;
-		case 0xe8: // INX - Increment X Register - Implied
-			state.x = ++state.x & 0xff;
-			setArithmeticFlags(state.x);
-			break;
-		case 0xea: // NOP - No Operation - Implied
-			// Do nothing.
-			break;
-		case 0xf0: // BEQ - Branch if Equal to Zero - Relative
-			if (getZeroFlag()) {
-				state.pc = relAddress(state.args[0]);
-			}
-			break;
-		case 0xf8: // SED - Set Decimal Flag - Implied
-			setDecimalModeFlag();
-			break;
-		case 0xfa: // PLX - Pull X Register - Implied
-			state.x = stackPop();
-			setArithmeticFlags(state.x);
-			break;
+				break;
+			case 0x88: // DEY - Decrement Y Register - Implied
+				state.y = --state.y & 0xff;
+				setArithmeticFlags(state.y);
+				break;
+			case 0x8a: // TXA - Transfer X to Accumulator - Implied
+				state.a = state.x;
+				setArithmeticFlags(state.a);
+				break;
+			case 0x90: // BCC - Branch if Carry Clear - Relative
+				if (!getCarryFlag()) {
+					state.pc = relAddress(state.args[0]);
+				}
+				break;
+			case 0x98: // TYA - Transfer Y to Accumulator - Implied
+				state.a = state.y;
+				setArithmeticFlags(state.a);
+				break;
+			case 0x9a: // TXS - Transfer X to Stack Pointer - Implied
+				setStackPointer(state.x);
+				break;
+			case 0xa8: // TAY - Transfer Accumulator to Y - Implied
+				state.y = state.a;
+				setArithmeticFlags(state.y);
+				break;
+			case 0xaa: // TAX - Transfer Accumulator to X - Implied
+				state.x = state.a;
+				setArithmeticFlags(state.x);
+				break;
+			case 0xb0: // BCS - Branch if Carry Set - Relative
+				if (getCarryFlag()) {
+					state.pc = relAddress(state.args[0]);
+				}
+				break;
+			case 0xb8: // CLV - Clear Overflow Flag - Implied
+				clearOverflowFlag();
+				break;
+			case 0xba: // TSX - Transfer Stack Pointer to X - Implied
+				state.x = getStackPointer();
+				setArithmeticFlags(state.x);
+				break;
+			case 0xc8: // INY - Increment Y Register - Implied
+				state.y = ++state.y & 0xff;
+				setArithmeticFlags(state.y);
+				break;
+			case 0xca: // DEX - Decrement X Register - Implied
+				state.x = --state.x & 0xff;
+				setArithmeticFlags(state.x);
+				break;
+			case 0xd0: // BNE - Branch if Not Equal to Zero - Relative
+				if (!getZeroFlag()) {
+					state.pc = relAddress(state.args[0]);
+				}
+				break;
+			case 0xd8: // CLD - Clear Decimal Mode - Implied
+				clearDecimalModeFlag();
+				break;
+			case 0xda: // PHX - Push X Register - Implied
+				stackPush(state.x);
+				break;
+			case 0xe8: // INX - Increment X Register - Implied
+				state.x = ++state.x & 0xff;
+				setArithmeticFlags(state.x);
+				break;
+			case 0xea: // NOP - No Operation - Implied
+				// Do nothing.
+				break;
+			case 0xf0: // BEQ - Branch if Equal to Zero - Relative
+				if (getZeroFlag()) {
+					state.pc = relAddress(state.args[0]);
+				}
+				break;
+			case 0xf8: // SED - Set Decimal Flag - Implied
+				setDecimalModeFlag();
+				break;
+			case 0xfa: // PLX - Pull X Register - Implied
+				state.x = stackPop();
+				setArithmeticFlags(state.x);
+				break;
 
-		/* ORA - Logical Inclusive Or ******************************************/
-		case 0x09: // #Immediate
-			state.a |= state.args[0];
-			setArithmeticFlags(state.a);
-			break;
-		case 0x01: // (Zero Page,X)
-		case 0x05: // Zero Page
-		case 0x0d: // Absolute
-		case 0x11: // (Zero Page),Y
-		case 0x12: // (Zero Page),Z
-		case 0x15: // Zero Page,X
-		case 0x19: // Absolute,Y
-		case 0x1d: // Absolute,X
-			state.a |= bus.read(effectiveAddress);
-			setArithmeticFlags(state.a);
-			break;
+			/* ORA - Logical Inclusive Or ******************************************/
+			case 0x09: // #Immediate
+				state.a |= state.args[0];
+				setArithmeticFlags(state.a);
+				break;
+			case 0x01: // (Zero Page,X)
+			case 0x05: // Zero Page
+			case 0x0d: // Absolute
+			case 0x11: // (Zero Page),Y
+			case 0x12: // (Zero Page)
+			case 0x15: // Zero Page,X
+			case 0x19: // Absolute,Y
+			case 0x1d: // Absolute,X
+				state.a |= bus.read(effectiveAddress);
+				setArithmeticFlags(state.a);
+				break;
 
-		/* TSB - Test and Set Bit **********************************************/
-		case 0x04: // Zero Page
-		case 0x0c: // Absolute
-			tmp = bus.read(effectiveAddress);
-			setZeroFlag((state.a & tmp) == 0);
-			bus.write(effectiveAddress, state.a | tmp);
-			break;
+			/* TSB - Test and Set Bit **********************************************/
+			case 0x04: // Zero Page
+			case 0x0c: // Absolute
+				tmp = bus.read(effectiveAddress);
+				setZeroFlag((state.a & tmp) == 0);
+				bus.write(effectiveAddress, state.a | tmp);
+				break;
 
-		/* ASL - Arithmetic Shift Left *****************************************/
-		case 0x0a: // Accumulator
-			state.a = asl(state.a);
-			setArithmeticFlags(state.a);
-			break;
-		case 0x06: // Zero Page
-		case 0x0e: // Absolute
-		case 0x16: // Zero Page,X
-		case 0x1e: // Absolute,X
-			tmp = asl(bus.read(effectiveAddress));
-			bus.write(effectiveAddress, tmp);
-			setArithmeticFlags(tmp);
-			break;
+			/* ASL - Arithmetic Shift Left *****************************************/
+			case 0x0a: // Accumulator
+				state.a = asl(state.a);
+				setArithmeticFlags(state.a);
+				break;
+			case 0x06: // Zero Page
+			case 0x0e: // Absolute
+			case 0x16: // Zero Page,X
+			case 0x1e: // Absolute,X
+				tmp = asl(bus.read(effectiveAddress));
+				bus.write(effectiveAddress, tmp);
+				setArithmeticFlags(tmp);
+				break;
 
-		/* TRB - Test and Reset Bit ********************************************/
-		case 0x14: // Zero Page
-		case 0x1c: // Absolute
-			tmp = bus.read(effectiveAddress);
-			setZeroFlag((state.a & tmp) == 0);
-			bus.write(effectiveAddress, state.a & ~tmp);
-			break;
+			/* TRB - Test and Reset Bit ********************************************/
+			case 0x14: // Zero Page
+			case 0x1c: // Absolute
+				tmp = bus.read(effectiveAddress);
+				setZeroFlag((state.a & tmp) == 0);
+				bus.write(effectiveAddress, state.a & ~tmp);
+				break;
 
-		/* BIT - Bit Test ******************************************************/
-		case 0x89: // #Immediate
-			setZeroFlag((state.a & state.args[0]) == 0);
-			setNegativeFlag((state.args[0] & 0x80) != 0);
-			setOverflowFlag((state.args[0] & 0x40) != 0);
-			break;
-		case 0x24: // Zero Page
-		case 0x2c: // Absolute
-		case 0x34: // Zero Page,X
-		case 0x3c: // Absolute,X
-			tmp = bus.read(effectiveAddress);
-			setZeroFlag((state.a & tmp) == 0);
-			setNegativeFlag((tmp & 0x80) != 0);
-			setOverflowFlag((tmp & 0x40) != 0);
-			break;
+			/* BIT - Bit Test ******************************************************/
+			case 0x89: // #Immediate
+				setZeroFlag((state.a & state.args[0]) == 0);
+				setNegativeFlag((state.args[0] & 0x80) != 0);
+				setOverflowFlag((state.args[0] & 0x40) != 0);
+				break;
+			case 0x24: // Zero Page
+			case 0x2c: // Absolute
+			case 0x34: // Zero Page,X
+			case 0x3c: // Absolute,X
+				tmp = bus.read(effectiveAddress);
+				setZeroFlag((state.a & tmp) == 0);
+				setNegativeFlag((tmp & 0x80) != 0);
+				setOverflowFlag((tmp & 0x40) != 0);
+				break;
 
-		/* AND - Logical AND ***************************************************/
-		case 0x29: // #Immediate
-			state.a &= state.args[0];
-			setArithmeticFlags(state.a);
-			break;
-		case 0x21: // (Zero Page,X)
-		case 0x25: // Zero Page
-		case 0x2d: // Absolute
-		case 0x31: // (Zero Page),Y
-		case 0x32: // (Zero Page),Z
-		case 0x35: // Zero Page,X
-		case 0x39: // Absolute,Y
-		case 0x3d: // Absolute,X
-			state.a &= bus.read(effectiveAddress);
-			setArithmeticFlags(state.a);
-			break;
+			/* AND - Logical AND ***************************************************/
+			case 0x29: // #Immediate
+				state.a &= state.args[0];
+				setArithmeticFlags(state.a);
+				break;
+			case 0x21: // (Zero Page,X)
+			case 0x25: // Zero Page
+			case 0x2d: // Absolute
+			case 0x31: // (Zero Page),Y
+			case 0x32: // (Zero Page)
+			case 0x35: // Zero Page,X
+			case 0x39: // Absolute,Y
+			case 0x3d: // Absolute,X
+				state.a &= bus.read(effectiveAddress);
+				setArithmeticFlags(state.a);
+				break;
 
-		/* ROL - Rotate Left ***************************************************/
-		case 0x2a: // Accumulator
-			state.a = rol(state.a);
-			setArithmeticFlags(state.a);
-			break;
-		case 0x26: // Zero Page
-		case 0x2e: // Absolute
-		case 0x36: // Zero Page,X
-		case 0x3e: // Absolute,X
-			tmp = rol(bus.read(effectiveAddress));
-			bus.write(effectiveAddress, tmp);
-			setArithmeticFlags(tmp);
-			break;
+			/* ROL - Rotate Left ***************************************************/
+			case 0x2a: // Accumulator
+				state.a = rol(state.a);
+				setArithmeticFlags(state.a);
+				break;
+			case 0x26: // Zero Page
+			case 0x2e: // Absolute
+			case 0x36: // Zero Page,X
+			case 0x3e: // Absolute,X
+				tmp = rol(bus.read(effectiveAddress));
+				bus.write(effectiveAddress, tmp);
+				setArithmeticFlags(tmp);
+				break;
 
-		/* EOR - Exclusive OR **************************************************/
-		case 0x49: // #Immediate
-			state.a ^= state.args[0];
-			setArithmeticFlags(state.a);
-			break;
-		case 0x41: // (Zero Page,X)
-		case 0x45: // Zero Page
-		case 0x4d: // Absolute
-		case 0x51: // (Zero Page),Y
-		case 0x52: // (Zero Page),Z
-		case 0x55: // Zero Page,X
-		case 0x59: // Absolute,Y
-		case 0x5d: // Absolute,X
-			state.a ^= bus.read(effectiveAddress);
-			setArithmeticFlags(state.a);
-			break;
+			/* EOR - Exclusive OR **************************************************/
+			case 0x49: // #Immediate
+				state.a ^= state.args[0];
+				setArithmeticFlags(state.a);
+				break;
+			case 0x41: // (Zero Page,X)
+			case 0x45: // Zero Page
+			case 0x4d: // Absolute
+			case 0x51: // (Zero Page),Y
+			case 0x52: // (Zero Page)
+			case 0x55: // Zero Page,X
+			case 0x59: // Absolute,Y
+			case 0x5d: // Absolute,X
+				state.a ^= bus.read(effectiveAddress);
+				setArithmeticFlags(state.a);
+				break;
 
-		/* LSR - Logical Shift Right *******************************************/
-		case 0x4a: // Accumulator
-			state.a = lsr(state.a);
-			setArithmeticFlags(state.a);
-			break;
-		case 0x46: // Zero Page
-		case 0x4e: // Absolute
-		case 0x56: // Zero Page,X
-		case 0x5e: // Absolute,X
-			tmp = lsr(bus.read(effectiveAddress));
-			bus.write(effectiveAddress, tmp);
-			setArithmeticFlags(tmp);
-			break;
+			/* LSR - Logical Shift Right *******************************************/
+			case 0x4a: // Accumulator
+				state.a = lsr(state.a);
+				setArithmeticFlags(state.a);
+				break;
+			case 0x46: // Zero Page
+			case 0x4e: // Absolute
+			case 0x56: // Zero Page,X
+			case 0x5e: // Absolute,X
+				tmp = lsr(bus.read(effectiveAddress));
+				bus.write(effectiveAddress, tmp);
+				setArithmeticFlags(tmp);
+				break;
 
-		/* JMP - Jump **********************************************************/
-		case 0x4c: // Absolute
-		case 0x6c: // (Absolute)
-		case 0x7c: // (Absolute,X)
-			state.pc = effectiveAddress;
-			break;
+			/* JMP - Jump **********************************************************/
+			case 0x4c: // Absolute
+			case 0x6c: // (Absolute)
+			case 0x7c: // (Absolute,X)
+				state.pc = effectiveAddress;
+				break;
 
-		/* ADC - Add with Carry ************************************************/
-		case 0x69: // #Immediate
-			if (state.decimalModeFlag) {
-				state.a = adcDecimal(state.a, state.args[0]);
-			} else {
-				state.a = adc(state.a, state.args[0]);
-			}
-			break;
-		case 0x61: // (Zero Page,X)
-		case 0x65: // Zero Page
-		case 0x6d: // Absolute
-		case 0x71: // (Zero Page),Y
-		case 0x72: // (Zero Page),Z
-		case 0x75: // Zero Page,X
-		case 0x79: // Absolute,Y
-		case 0x7d: // Absolute,X
-			if (state.decimalModeFlag) {
-				state.a = adcDecimal(state.a, bus.read(effectiveAddress));
-			} else {
-				state.a = adc(state.a, bus.read(effectiveAddress));
-			}
-			break;
+			/* ADC - Add with Carry ************************************************/
+			case 0x69: // #Immediate
+				if (state.decimalModeFlag) {
+					state.a = adcDecimal(state.a, state.args[0]);
+				} else {
+					state.a = adc(state.a, state.args[0]);
+				}
+				break;
+			case 0x61: // (Zero Page,X)
+			case 0x65: // Zero Page
+			case 0x6d: // Absolute
+			case 0x71: // (Zero Page),Y
+			case 0x72: // (Zero Page)
+			case 0x75: // Zero Page,X
+			case 0x79: // Absolute,Y
+			case 0x7d: // Absolute,X
+				if (state.decimalModeFlag) {
+					state.a = adcDecimal(state.a, bus.read(effectiveAddress));
+				} else {
+					state.a = adc(state.a, bus.read(effectiveAddress));
+				}
+				break;
 
-		/* STZ - Store Zero ****************************************************/
-		case 0x64: // Zero Page
-		case 0x74: // Zero Page,X
-		case 0x9c: // Absolute
-		case 0x9e: // Absolute,X
-			bus.write(effectiveAddress, 0);
-			break;
+			/* STZ - Store Zero ****************************************************/
+			case 0x64: // Zero Page
+			case 0x74: // Zero Page,X
+			case 0x9c: // Absolute
+			case 0x9e: // Absolute,X
+				bus.write(effectiveAddress, 0);
+				break;
 
-		/* ROR - Rotate Right **************************************************/
-		case 0x6a: // Accumulator
-			state.a = ror(state.a);
-			setArithmeticFlags(state.a);
-			break;
-		case 0x66: // Zero Page
-		case 0x6e: // Absolute
-		case 0x76: // Zero Page,X
-		case 0x7e: // Absolute,X
-			tmp = ror(bus.read(effectiveAddress));
-			bus.write(effectiveAddress, tmp);
-			setArithmeticFlags(tmp);
-			break;
+			/* ROR - Rotate Right **************************************************/
+			case 0x6a: // Accumulator
+				state.a = ror(state.a);
+				setArithmeticFlags(state.a);
+				break;
+			case 0x66: // Zero Page
+			case 0x6e: // Absolute
+			case 0x76: // Zero Page,X
+			case 0x7e: // Absolute,X
+				tmp = ror(bus.read(effectiveAddress));
+				bus.write(effectiveAddress, tmp);
+				setArithmeticFlags(tmp);
+				break;
 
-		/* STA - Store Accumulator *********************************************/
-		case 0x81: // (Zero Page,X)
-		case 0x82: // Stack Relative,Y
-		case 0x85: // Zero Page
-		case 0x8d: // Absolute
-		case 0x91: // (Zero Page),Y
-		case 0x92: // (Zero Page),Z
-		case 0x95: // Zero Page,X
-		case 0x99: // Absolute,Y
-		case 0x9d: // Absolute,X
-			bus.write(effectiveAddress, state.a);
-			break;
+			/* STA - Store Accumulator *********************************************/
+			case 0x81: // (Zero Page,X)
+			case 0x85: // Zero Page
+			case 0x8d: // Absolute
+			case 0x91: // (Zero Page),Y
+			case 0x92: // (Zero Page)
+			case 0x95: // Zero Page,X
+			case 0x99: // Absolute,Y
+			case 0x9d: // Absolute,X
+				bus.write(effectiveAddress, state.a);
+				break;
 
-		/* STY - Store Y Register **********************************************/
-		case 0x84: // Zero Page
-		case 0x8b: // Absolute,X
-		case 0x8c: // Absolute
-		case 0x94: // Zero Page,X
-			bus.write(effectiveAddress, state.y);
-			break;
+			/* STY - Store Y Register **********************************************/
+			case 0x84: // Zero Page
+			case 0x8c: // Absolute
+			case 0x94: // Zero Page,X
+				bus.write(effectiveAddress, state.y);
+				break;
 
-		/* STX - Store X Register **********************************************/
-		case 0x86: // Zero Page
-		case 0x8e: // Absolute
-		case 0x96: // Zero Page,Y
-		case 0x9b: // Absolute,Y
-			bus.write(effectiveAddress, state.x);
-			break;
+			/* STX - Store X Register **********************************************/
+			case 0x86: // Zero Page
+			case 0x8e: // Absolute
+			case 0x96: // Zero Page,Y
+				bus.write(effectiveAddress, state.x);
+				break;
 
-		/* LDZ - Load Z Register ***********************************************/
-		case 0xa3: // #Immediate
-			state.z = state.args[0];
-			setArithmeticFlags(state.z);
-			break;
-		case 0xab: // Absolute
-		case 0xbb: // Absolute,X
-			state.z = bus.read(effectiveAddress);
-			setArithmeticFlags(state.z);
-			break;
+			/* LDY - Load Y Register ***********************************************/
+			case 0xa0: // #Immediate
+				state.y = state.args[0];
+				setArithmeticFlags(state.y);
+				break;
+			case 0xa4: // Zero Page
+			case 0xac: // Absolute
+			case 0xb4: // Zero Page,X
+			case 0xbc: // Absolute,X
+				state.y = bus.read(effectiveAddress);
+				setArithmeticFlags(state.y);
+				break;
 
-		/* LDY - Load Y Register ***********************************************/
-		case 0xa0: // #Immediate
-			state.y = state.args[0];
-			setArithmeticFlags(state.y);
-			break;
-		case 0xa4: // Zero Page
-		case 0xac: // Absolute
-		case 0xb4: // Zero Page,X
-		case 0xbc: // Absolute,X
-			state.y = bus.read(effectiveAddress);
-			setArithmeticFlags(state.y);
-			break;
+			/* LDX - Load X Register ***********************************************/
+			case 0xa2: // #Immediate
+				state.x = state.args[0];
+				setArithmeticFlags(state.x);
+				break;
+			case 0xa6: // Zero Page
+			case 0xae: // Absolute
+			case 0xb6: // Zero Page,Y
+			case 0xbe: // Absolute,Y
+				state.x = bus.read(effectiveAddress);
+				setArithmeticFlags(state.x);
+				break;
 
-		/* LDX - Load X Register ***********************************************/
-		case 0xa2: // #Immediate
-			state.x = state.args[0];
-			setArithmeticFlags(state.x);
-			break;
-		case 0xa6: // Zero Page
-		case 0xae: // Absolute
-		case 0xb6: // Zero Page,Y
-		case 0xbe: // Absolute,Y
-			state.x = bus.read(effectiveAddress);
-			setArithmeticFlags(state.x);
-			break;
+			/* LDA - Load Accumulator **********************************************/
+			case 0xa9: // #Immediate
+				state.a = state.args[0];
+				setArithmeticFlags(state.a);
+				break;
+			case 0xa1: // (Zero Page,X)
+			case 0xa5: // Zero Page
+			case 0xad: // Absolute
+			case 0xb1: // (Zero Page),Y
+			case 0xb2: // (Zero Page)
+			case 0xb5: // Zero Page,X
+			case 0xb9: // Absolute,Y
+			case 0xbd: // Absolute,X
+				state.a = bus.read(effectiveAddress);
+				setArithmeticFlags(state.a);
+				break;
 
-		/* LDA - Load Accumulator **********************************************/
-		case 0xa9: // #Immediate
-			state.a = state.args[0];
-			setArithmeticFlags(state.a);
-			break;
-		case 0xa1: // (Zero Page,X)
-		case 0xa5: // Zero Page
-		case 0xad: // Absolute
-		case 0xb1: // (Zero Page),Y
-		case 0xb2: // (Zero Page),Z
-		case 0xb5: // Zero Page,X
-		case 0xb9: // Absolute,Y
-		case 0xbd: // Absolute,X
-		case 0xe2: // Stack Relative,Y
-			state.a = bus.read(effectiveAddress);
-			setArithmeticFlags(state.a);
-			break;
+			/* CPY - Compare Y Register ********************************************/
+			case 0xc0: // #Immediate
+				cmp(state.y, state.args[0]);
+				break;
+			case 0xc4: // Zero Page
+			case 0xcc: // Absolute
+				cmp(state.y, bus.read(effectiveAddress));
+				break;
 
-		/* CPY - Compare Y Register ********************************************/
-		case 0xc0: // #Immediate
-			cmp(state.y, state.args[0]);
-			break;
-		case 0xc4: // Zero Page
-		case 0xcc: // Absolute
-			cmp(state.y, bus.read(effectiveAddress));
-			break;
+			/* CMP - Compare Accumulator *******************************************/
+			case 0xc9: // #Immediate
+				cmp(state.a, state.args[0]);
+				break;
+			case 0xc1: // (Zero Page,X)
+			case 0xc5: // Zero Page
+			case 0xcd: // Absolute
+			case 0xd1: // (Zero Page),Y
+			case 0xd2: // (Zero Page)
+			case 0xd5: // Zero Page,X
+			case 0xd9: // Absolute,Y
+			case 0xdd: // Absolute,X
+				cmp(state.a, bus.read(effectiveAddress));
+				break;
 
-		/* CPZ - Compare Z Register ********************************************/
-		case 0xc2: // #Immediate
-			cmp(state.z, state.args[0]);
-			break;
-		case 0xd4: // Zero Page
-		case 0xdc: // Absolute
-			cmp(state.z, bus.read(effectiveAddress));
-			break;
+			/* DEC - Decrement Memory **********************************************/
+			case 0x3a: // Accumulator
+				state.a = (state.a - 1) & 0xff;
+				break;
+			case 0xc6: // Zero Page
+			case 0xce: // Absolute
+			case 0xd6: // Zero Page,X
+			case 0xde: // Absolute,X
+				tmp = (bus.read(effectiveAddress) - 1) & 0xff;
+				bus.write(effectiveAddress, tmp);
+				setArithmeticFlags(tmp);
+				break;
 
-		/* CMP - Compare Accumulator *******************************************/
-		case 0xc9: // #Immediate
-			cmp(state.a, state.args[0]);
-			break;
-		case 0xc1: // (Zero Page,X)
-		case 0xc5: // Zero Page
-		case 0xcd: // Absolute
-		case 0xd1: // (Zero Page),Y
-		case 0xd2: // (Zero Page),Z
-		case 0xd5: // Zero Page,X
-		case 0xd9: // Absolute,Y
-		case 0xdd: // Absolute,X
-			cmp(state.a, bus.read(effectiveAddress));
-			break;
+			/* CPX - Compare X Register ********************************************/
+			case 0xe0: // #Immediate
+				cmp(state.x, state.args[0]);
+				break;
+			case 0xe4: // Zero Page
+			case 0xec: // Absolute
+				cmp(state.x, bus.read(effectiveAddress));
+				break;
 
-		/* DEC - Decrement Memory **********************************************/
-		case 0x3a: // Accumulator
-			state.a = (state.a - 1) & 0xff;
-			break;
-		case 0xc6: // Zero Page
-		case 0xce: // Absolute
-		case 0xd6: // Zero Page,X
-		case 0xde: // Absolute,X
-			tmp = (bus.read(effectiveAddress) - 1) & 0xff;
-			bus.write(effectiveAddress, tmp);
-			setArithmeticFlags(tmp);
-			break;
+			/* SBC - Subtract with Carry (Borrow) **********************************/
+			case 0xe9: // #Immediate
+				if (state.decimalModeFlag) {
+					state.a = sbcDecimal(state.a, state.args[0]);
+				} else {
+					state.a = sbc(state.a, state.args[0]);
+				}
+				break;
+			case 0xe1: // (Zero Page,X)
+			case 0xe5: // Zero Page
+			case 0xed: // Absolute
+			case 0xf1: // (Zero Page),Y
+			case 0xf2: // (Zero Page)
+			case 0xf5: // Zero Page,X
+			case 0xf9: // Absolute,Y
+			case 0xfd: // Absolute,X
+				if (state.decimalModeFlag) {
+					state.a = sbcDecimal(state.a, bus.read(effectiveAddress));
+				} else {
+					state.a = sbc(state.a, bus.read(effectiveAddress));
+				}
+				break;
 
-		/* CPX - Compare X Register ********************************************/
-		case 0xe0: // #Immediate
-			cmp(state.x, state.args[0]);
-			break;
-		case 0xe4: // Zero Page
-		case 0xec: // Absolute
-			cmp(state.x, bus.read(effectiveAddress));
-			break;
+			/* INC - Increment Memory **********************************************/
+			case 0x1a: // Accumulator
+				state.a = (state.a + 1) & 0xff;
+				break;
+			case 0xe6: // Zero Page
+			case 0xee: // Absolute
+			case 0xf6: // Zero Page,X
+			case 0xfe: // Absolute,X
+				tmp = (bus.read(effectiveAddress) + 1) & 0xff;
+				bus.write(effectiveAddress, tmp);
+				setArithmeticFlags(tmp);
+				break;
 
-		/* SBC - Subtract with Carry (Borrow) **********************************/
-		case 0xe9: // #Immediate
-			if (state.decimalModeFlag) {
-				state.a = sbcDecimal(state.a, state.args[0]);
-			} else {
-				state.a = sbc(state.a, state.args[0]);
-			}
-			break;
-		case 0xe1: // (Zero Page,X)
-		case 0xe5: // Zero Page
-		case 0xed: // Absolute
-		case 0xf1: // (Zero Page),Y
-		case 0xf2: // (Zero Page),Z
-		case 0xf5: // Zero Page,X
-		case 0xf9: // Absolute,Y
-		case 0xfd: // Absolute,X
-			if (state.decimalModeFlag) {
-				state.a = sbcDecimal(state.a, bus.read(effectiveAddress));
-			} else {
-				state.a = sbc(state.a, bus.read(effectiveAddress));
-			}
-			break;
-
-		/* INC - Increment Memory **********************************************/
-		case 0x1a: // Accumulator
-			state.a = (state.a + 1) & 0xff;
-			break;
-		case 0xe6: // Zero Page
-		case 0xee: // Absolute
-		case 0xf6: // Zero Page,X
-		case 0xfe: // Absolute,X
-			tmp = (bus.read(effectiveAddress) + 1) & 0xff;
-			bus.write(effectiveAddress, tmp);
-			setArithmeticFlags(tmp);
-			break;
-
-		// Rockwell 65C02 Extensions
-
-		/* RMB - Reset Memory Bit **********************************************/
-		case 0x07: // Zero Page
-		case 0x17: // Zero Page
-		case 0x27: // Zero Page
-		case 0x37: // Zero Page
-		case 0x47: // Zero Page
-		case 0x57: // Zero Page
-		case 0x67: // Zero Page
-		case 0x77: // Zero Page
-			tmp = 1 << ((state.ir & 0x70) >> 4);
-			bus.write(effectiveAddress, bus.read(effectiveAddress) & ~tmp);
-			break;
-
-		/* SMB - Set Memory Bit ************************************************/
-		case 0x87: // Zero Page
-		case 0x97: // Zero Page
-		case 0xa7: // Zero Page
-		case 0xb7: // Zero Page
-		case 0xc7: // Zero Page
-		case 0xd7: // Zero Page
-		case 0xe7: // Zero Page
-		case 0xf7: // Zero Page
-			tmp = 1 << ((state.ir & 0x70) >> 4);
-			bus.write(effectiveAddress, bus.read(effectiveAddress) | tmp);
-			break;
-
-		/* BBR - Branch on Bit Reset *******************************************/
-		case 0x0f: // Zero Page Relative
-		case 0x1f: // Zero Page Relative
-		case 0x2f: // Zero Page Relative
-		case 0x3f: // Zero Page Relative
-		case 0x4f: // Zero Page Relative
-		case 0x5f: // Zero Page Relative
-		case 0x6f: // Zero Page Relative
-		case 0x7f: // Zero Page Relative
-			tmp = 1 << ((state.ir & 0x70) >> 4);
-			if ((bus.read(state.args[0]) & tmp) == 0)
-				state.pc = relAddress(state.args[1]);
-			break;
-
-		/* BBS - Branch on Bit Set *********************************************/
-		case 0x8f: // Zero Page Relative
-		case 0x9f: // Zero Page Relative
-		case 0xaf: // Zero Page Relative
-		case 0xbf: // Zero Page Relative
-		case 0xcf: // Zero Page Relative
-		case 0xdf: // Zero Page Relative
-		case 0xef: // Zero Page Relative
-		case 0xff: // Zero Page Relative
-			tmp = 1 << ((state.ir & 0x70) >> 4);
-			if ((bus.read(state.args[0]) & tmp) != 0)
-				state.pc = relAddress(state.args[1]);
-			break;
-
-		/* 65CE02 Instructions ***********************************************/
-		case 0x02: // CLE - Clear Extend Disable Flag
-			clearExtendFlag();
-			break;
-		case 0x03: // SEE - Set Stack Extend Disable Flag
-			setExtendFlag();
-			break;
-		case 0x0b: // TSY - Transfer Stack Pointer to Y
-			state.y = state.sp;
-			setArithmeticFlags(state.y);
-			break;
-		case 0x13: // BPL - Branch if Positive - Relative (word)
-			if (!getNegativeFlag()) {
-				state.pc = relAddress16(state.args[0]);
-			}
-			break;
-		case 0x1b: // INZ - Increment Z Register - Implied
-			state.z = ++state.z & 0xff;
-			setArithmeticFlags(state.z);
-			break;
-		case 0x2b: // TYS - Transfer Y to Stack Pointer
-			state.sp = state.y;
-			setArithmeticFlags(state.sp);
-			break;
-		case 0x33: // BMI - Branch if Minus - Relative (word)
-			if (getNegativeFlag()) {
-				state.pc = relAddress16(state.args[0]);
-			}
-			break;
-		case 0x3b: // DEZ - Decrement Z Register - Implied
-			state.z = (state.z - 1) & 0xff;
-			break;
-		case 0x42: // NEG - Negate
-			state.a = -state.a & 0xff;
-			setArithmeticFlags(state.a);
-			break;
-		case 0x43: // ASR - Arithmetic Shift Right - Accumulator
-			state.a = asr(state.a);
-			setArithmeticFlags(state.a);
-			break;
-		case 0x44: // ASR - Arithmetic Shift Right - Zeropage
-		case 0x54: // ASR - Arithmetic Shift Right - Zeropage X-Indexed
-			tmp = asr(bus.read(effectiveAddress));
-			bus.write(effectiveAddress, tmp);
-			setArithmeticFlags(tmp);
-			break;
-		case 0x4b: // TAZ - Transfer Accumulator to Z - Implied
-			state.z = state.a;
-			setArithmeticFlags(state.z);
-			break;
-		case 0x53: // BVC - Branch if Overflow Clear - Relative (word)
-			if (!getOverflowFlag()) {
-				state.pc = relAddress16(state.args[0]);
-			}
-			break;
-		case 0x5b: // TAB - Transfer Accumulator to Base Page - Implied
-			state.b = state.a << 8;
-			setArithmeticFlags(state.b);
-			break;
-		case 0x5c: // AUG - Augment - Implied
-			break;
-		case 0x62: // RTN - Return from Kenal - Implied
-			lo = stackPop();
-			hi = stackPop();
-			setProgramCounter((Utils.address(lo, hi) + 1) & 0xffff);
-			break;
-		case 0x63: // BSR - Branch to Subroutine - Relative (word)
-			lo = relAddress16(state.args[0]);
-			hi = relAddress16(state.args[1]);
-			setStackPointer((Utils.address(lo, hi) + 1) & 0xffff);
-			state.pc = (Utils.address(lo, hi) + 1) & 0xffff;
-			break;
-		case 0x6b: // TZA - Transfer Z to Accumulator - Implied
-			state.a = state.z;
-			setArithmeticFlags(state.a);
-			break;
-		case 0x73: // BVS - Branch if Overflow Set - Relative (word)
-			if (getOverflowFlag()) {
-				state.pc = relAddress16(state.args[0]);
-			}
-			break;
-		case 0x7b: // TBA - Transfer Base Page to Accumulator - Implied
-			state.a = state.b >> 8;
-			setArithmeticFlags(state.a);
-			break;
-		case 0x83: // BRA - Branch Always - Relative (word)
-			state.pc = relAddress16(state.args[0]);
-			break;
-		case 0x93: // BCC - Branch if Carry Clear - Relative (word)
-			if (!getCarryFlag()) {
-				state.pc = relAddress16(state.args[0]);
-			}
-			break;
-		case 0xb3: // BCS - Branch if Carry Set - Relative (word
-			if (getCarryFlag()) {
-				state.pc = relAddress16(state.args[0]);
-			}
-			break;
-		case 0xc3: // DEW - Decrement Word - Zeropage
-			lo = bus.read(state.args[0]);
-			hi = bus.read(state.args[1]);
-			tmp = ((Utils.address(lo, hi) + 1) & 0xff) - 1;
-			bus.write(effectiveAddress, tmp);
-			setArithmeticFlags(tmp);
-			break;
-		case 0xd3: // BNE - Branch if Not Equal to Zero - Relative (word
-			if (!getZeroFlag()) {
-				state.pc = relAddress(state.args[0]);
-			}
-			break;
-		case 0xe3: // INV - Increment Word - Zeropage
-			lo = bus.read(state.args[0]);
-			hi = bus.read(state.args[1]);
-			tmp = ((Utils.address(lo, hi) + 1) & 0xff) + 1;
-			bus.write(effectiveAddress, tmp);
-			setArithmeticFlags(tmp);
-			break;
-		case 0xeb: // ROW - Rotate Word - Absolute
-			tmp = row(bus.read(effectiveAddress));
-			bus.write(effectiveAddress, tmp);
-			setArithmeticFlags(tmp);
-			break;
-		case 0xf4: // PHW - Push Word - Immediate (word)
-			tmp = relAddress16(state.args[0]);
-			phw(tmp);
-			break;
-		case 0xfb: // PLZ - Pull Z Register - Implied
-			state.z = stackPop();
-			setArithmeticFlags(state.z);
-			break;
-		case 0xfc: // PHW - Push Word - Absolute
-			tmp = relAddress16(bus.read(effectiveAddress));
-			phw(tmp);
-			bus.write(effectiveAddress, tmp);
-			break;
-
-		/* Unimplemented Instructions ****************************************/
-		default:
-			break;
+			/* Unimplemented Instructions ****************************************/
+			default:
+				break;
 		}
 
 		if (BitComputersConfig.debugCpuTraceLog)
@@ -994,7 +752,7 @@ public class Cpu implements InstructionTable {
 		stackPush(state.getStatusFlag());
 		// Set the Interrupt Disabled flag.  RTI will clear it.
 		setIrqDisableFlag();
-		// The 65CE02 clears the Decimal flag on interrupts.
+		// The 65C02 clears the Decimal flag on interrupts.
 		clearDecimalModeFlag();
 
 		// Load interrupt vector address into PC
@@ -1106,17 +864,6 @@ public class Cpu implements InstructionTable {
 		return (m << 1) & 0xff;
 	}
 
-	private int asr(int m) {
-		setCarryFlag((m & 0x80) != 0);
-		return (m >>> 1) & 0xff;
-	}
-
-	private int asw(int m) {
-		int data = readWord(m);
-		setCarryFlag((data & 0x8000) != 0);
-		return (m << 1) & 0xff;
-	}
-
 	/**
 	 * Shifts the given value right by one bit, filling with zeros,
 	 * and sets the carry flag to the low bit of the initial value.
@@ -1148,17 +895,6 @@ public class Cpu implements InstructionTable {
 		return result;
 	}
 
-	private int row(int m) {
-		int result = (readWord(m) << 1) | getCarryBit();
-		setCarryFlag((result & 0x10000) != 0);
-		return result;
-	}
-
-	private void phw(int m) {
-		stackPush(m & 0xff);
-		stackPush(m >> 8);
-	}
-
 	/**
 	 * Return the current Cpu State.
 	 *
@@ -1166,6 +902,28 @@ public class Cpu implements InstructionTable {
 	 */
 	public CpuState getCpuState() {
 		return state;
+	}
+
+	/**
+	 * @return the negative flag
+	 */
+	public boolean getNegativeFlag() {
+		return state.negativeFlag;
+	}
+
+	/**
+	 * @param negativeFlag the negative flag to set
+	 */
+	public void setNegativeFlag(boolean negativeFlag) {
+		state.negativeFlag = negativeFlag;
+	}
+
+	public void setNegativeFlag() {
+		state.negativeFlag = true;
+	}
+
+	public void clearNegativeFlag() {
+		state.negativeFlag = false;
 	}
 
 	/**
@@ -1289,56 +1047,6 @@ public class Cpu implements InstructionTable {
 	}
 
 	/**
-	 * @return the Extend Flag
-	 */
-	public boolean getExtendFlag() {
-		return state.extendFlag;
-	}
-
-	/**
-	 * @param extendFlag the extend flag to set
-	 */
-	public void setExtendFlag(boolean extendFlag) {
-		state.extendFlag = extendFlag;
-	}
-
-	/**
-	 * Sets the Extend Flag
-	 */
-	public void setExtendFlag() {
-		state.extendFlag = true;
-	}
-
-	/**
-	 * Clears the Extend Flag
-	 */
-	public void clearExtendFlag() {
-		state.extendFlag = false;
-	}
-
-	/**
-	 * @return the negative flag
-	 */
-	public boolean getNegativeFlag() {
-		return state.negativeFlag;
-	}
-
-	/**
-	 * @param negativeFlag the negative flag to set
-	 */
-	public void setNegativeFlag(boolean negativeFlag) {
-		state.negativeFlag = negativeFlag;
-	}
-
-	public void setNegativeFlag() {
-		state.negativeFlag = true;
-	}
-
-	public void clearNegativeFlag() {
-		state.negativeFlag = false;
-	}
-
-	/**
 	 * @return the overflow flag
 	 */
 	public boolean getOverflowFlag() {
@@ -1402,14 +1110,6 @@ public class Cpu implements InstructionTable {
 		state.a = val;
 	}
 
-	public int getBasePage() {
-		return state.b;
-	}
-
-	public void setBasePage(int val) {
-		state.b = val;
-	}
-
 	public int getXRegister() {
 		return state.x;
 	}
@@ -1424,14 +1124,6 @@ public class Cpu implements InstructionTable {
 
 	public void setYRegister(int val) {
 		state.y = val;
-	}
-
-	public int getZRegister() {
-		return state.z;
-	}
-
-	public void setZRegister(int val) {
-		state.z = val;
 	}
 
 	public int getProgramCounter() {
@@ -1483,11 +1175,6 @@ public class Cpu implements InstructionTable {
 		else
 			clearBreakFlag();
 
-		if ((value & P_EXTEND) != 0)
-			setExtendFlag();
-		else
-			clearExtendFlag();
-
 		if ((value & P_OVERFLOW) != 0)
 			setOverflowFlag();
 		else
@@ -1503,20 +1190,12 @@ public class Cpu implements InstructionTable {
 		return "$" + Utils.byteToHex(state.a);
 	}
 
-	public String getBasePageStatus() {
-		return "$" + Utils.byteToHex(state.b);
-	}
-
 	public String getXRegisterStatus() {
 		return "$" + Utils.byteToHex(state.x);
 	}
 
 	public String getYRegisterStatus() {
 		return "$" + Utils.byteToHex(state.y);
-	}
-
-	public String getZRegisterStatus() {
-		return "$" + Utils.byteToHex(state.z);
 	}
 
 	public String getProgramCounterStatus() {
@@ -1562,7 +1241,7 @@ public class Cpu implements InstructionTable {
 	/**
 	 * Push an item onto the stack, and decrement the stack counter.
 	 * Will wrap-around if already at the bottom of the stack (This
-	 * is the same behavior as the real 65CE02)
+	 * is the same behavior as the real 65C02)
 	 */
 	void stackPush(int data) {
 		bus.write(0x100 + state.sp, data);
@@ -1577,7 +1256,7 @@ public class Cpu implements InstructionTable {
 	/**
 	 * Pre-increment the stack pointer, and return the top of the stack.
 	 * Will wrap-around if already at the top of the stack (This
-	 * is the same behavior as the real 65CE02)
+	 * is the same behavior as the real 65C02)
 	 */
 	int stackPop() {
 		if (state.sp == 0xff) {
@@ -1597,8 +1276,8 @@ public class Cpu implements InstructionTable {
 	}
 
 	/*
-	* Increment the PC, rolling over if necessary.
-	*/
+	 * Increment the PC, rolling over if necessary.
+	 */
 	void incrementPC() {
 		if (state.pc == 0xffff) {
 			state.pc = 0;
@@ -1617,22 +1296,11 @@ public class Cpu implements InstructionTable {
 		return newpc;
 	}
 
-	int relAddress16(int offset) {
-		// Cast the offset to a signed byte to handle negative offsets
-		int newpc = 1 + readWord(state.pc + (byte) offset);
-		this.cycles -= 3;
-		return newpc;
-	}
-
 	/**
 	 * Given a single byte, compute the Zero Page,Y offset address.
 	 */
 	int zpyAddress(int zp) {
 		return (zp + state.y) & 0xff;
-	}
-
-	int readWord(int m) {
-		return (m & 0xffff) | (((m & 0xffff) + 1) << 8);
 	}
 
 	/**
@@ -1651,53 +1319,50 @@ public class Cpu implements InstructionTable {
 		StringBuilder sb = new StringBuilder(mnemonic);
 
 		switch (instructionModes[opCode]) {
-		case ABS:
-			sb.append(" $").append(Utils.wordToHex(Utils.address(args[0], args[1])));
-			break;
-		case ABX:
-			sb.append(" $").append(Utils.wordToHex(Utils.address(args[0], args[1]))).append(",X");
-			break;
-		case ABY:
-			sb.append(" $").append(Utils.wordToHex(Utils.address(args[0], args[1]))).append(",Y");
-			break;
-		case IMM:
-			sb.append(" #$").append(Utils.byteToHex(args[0]));
-			break;
-		case IND:
-			sb.append(" ($").append(Utils.wordToHex(Utils.address(args[0], args[1]))).append(")");
-			break;
-		case INY:
-			sb.append(" ($").append(Utils.byteToHex(args[0])).append("),Y");
-			break;
-		case INZ:
-			sb.append(" ($").append(Utils.byteToHex(args[0])).append("),Z");
-			break;
-		case REL:
-			sb.append(" ").append(Utils.byteToString(args[0]));
-			break;
-		case BPG:
-			sb.append(" $").append(Utils.byteToHex(args[0]));
-			break;
-		case BPX:
-			sb.append(" $").append(Utils.byteToHex(args[0])).append(",X");
-			break;
-		case BPY:
-			sb.append(" $").append(Utils.byteToHex(args[0])).append(",Y");
-			break;
-		case IAX:
-			sb.append(" ($").append(Utils.wordToHex(Utils.address(args[0], args[1]))).append(",X)");
-			break;
-		case IZB:
-			sb.append(" ($").append(Utils.byteToHex(args[0])).append(")");
-			break;
-		case BPR:
-			sb.append(" $").append(Utils.byteToHex(args[0])).append(",").append(Utils.byteToString(args[0]));
-			break;
-		case SAY:
-			sb.append(" ($").append(Utils.wordToHex(args[0])).append(",SP),Y");
-			break;
-		default:
-			break;
+			case ABS:
+				sb.append(" $").append(Utils.wordToHex(Utils.address(args[0], args[1])));
+				break;
+			case ABX:
+				sb.append(" $").append(Utils.wordToHex(Utils.address(args[0], args[1]))).append(",X");
+				break;
+			case ABY:
+				sb.append(" $").append(Utils.wordToHex(Utils.address(args[0], args[1]))).append(",Y");
+				break;
+			case IMM:
+				sb.append(" #$").append(Utils.byteToHex(args[0]));
+				break;
+			case IND:
+				sb.append(" ($").append(Utils.wordToHex(Utils.address(args[0], args[1]))).append(")");
+				break;
+			case XIN:
+				sb.append(" ($").append(Utils.byteToHex(args[0])).append(",X)");
+				break;
+			case INY:
+				sb.append(" ($").append(Utils.byteToHex(args[0])).append("),Y");
+				break;
+			case REL:
+				sb.append(" ").append(Utils.byteToString(args[0]));
+				break;
+			case ZPG:
+				sb.append(" $").append(Utils.byteToHex(args[0]));
+				break;
+			case ZPX:
+				sb.append(" $").append(Utils.byteToHex(args[0])).append(",X");
+				break;
+			case ZPY:
+				sb.append(" $").append(Utils.byteToHex(args[0])).append(",Y");
+				break;
+			case IAX:
+				sb.append(" ($").append(Utils.wordToHex(Utils.address(args[0], args[1]))).append(",X)");
+				break;
+			case IZP:
+				sb.append(" ($").append(Utils.byteToHex(args[0])).append(")");
+				break;
+			case ZPR:
+				sb.append(" $").append(Utils.byteToHex(args[0])).append(",").append(Utils.byteToString(args[0]));
+				break;
+			default:
+				break;
 		}
 
 		return sb.toString();
