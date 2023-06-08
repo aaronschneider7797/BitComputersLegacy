@@ -583,7 +583,7 @@ public class Cpu implements InstructionTable {
 
 		/* STA - Store Accumulator *********************************************/
 		case 0x81: // (Zero Page,X)
-		case 0x82: // (Stack Relative,Y)
+		case 0x82: // Stack Relative,Y
 		case 0x85: // Zero Page
 		case 0x8d: // Absolute
 		case 0x91: // (Zero Page),Y
@@ -1399,6 +1399,14 @@ public class Cpu implements InstructionTable {
 		state.a = val;
 	}
 
+	public int getBasePage() {
+		return state.b;
+	}
+
+	public void setBasePage(int val) {
+		state.b = val;
+	}
+
 	public int getXRegister() {
 		return state.x;
 	}
@@ -1413,6 +1421,14 @@ public class Cpu implements InstructionTable {
 
 	public void setYRegister(int val) {
 		state.y = val;
+	}
+
+	public int getZRegister() {
+		return state.z;
+	}
+
+	public void setZRegister(int val) {
+		state.z = val;
 	}
 
 	public int getProgramCounter() {
@@ -1463,6 +1479,11 @@ public class Cpu implements InstructionTable {
 			setBreakFlag();
 		else
 			clearBreakFlag();
+
+		if ((value & P_EXTEND) != 0)
+			setExtendFlag();
+		else
+			clearExtendFlag();
 
 		if ((value & P_OVERFLOW) != 0)
 			setOverflowFlag();
