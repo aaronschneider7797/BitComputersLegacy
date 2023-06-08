@@ -651,7 +651,7 @@ public class Cpu implements InstructionTable {
 		case 0xa5: // Zero Page
 		case 0xad: // Absolute
 		case 0xb1: // (Zero Page),Y
-		case 0xb2: // (Zero Page)
+		case 0xb2: // Stack Relative,Y
 		case 0xb5: // Zero Page,X
 		case 0xb9: // Absolute,Y
 		case 0xbd: // Absolute,X
