@@ -1668,7 +1668,7 @@ public class Cpu implements InstructionTable {
 			sb.append(" $").append(Utils.byteToHex(args[0])).append(",").append(Utils.byteToString(args[0]));
 			break;
 		case SAY:
-			sb.append(" ($").append(Utils.wordToHex(ToHex(args[0])).append(",SP),Y");
+			sb.append(" ($").append(Utils.wordToHex(ToHex(args[0])).append(",SP),Y"));
 			break;
 		default:
 			break;
