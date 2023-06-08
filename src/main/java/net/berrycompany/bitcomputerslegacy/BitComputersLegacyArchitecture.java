@@ -1,4 +1,4 @@
-package net.berrycompany.bitcomputers;
+package net.berrycompany.bitcomputerslegacy;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -6,9 +6,9 @@ import java.io.IOException;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import net.berrycompany.bitcomputers.devices.BankSelector;
-import net.berrycompany.bitcomputers.exceptions.CallSynchronizedException;
-import net.berrycompany.bitcomputers.util.ValueManager;
+import net.berrycompany.bitcomputerslegacy.devices.BankSelector;
+import net.berrycompany.bitcomputerslegacy.exceptions.CallSynchronizedException;
+import net.berrycompany.bitcomputerslegacy.util.ValueManager;
 import net.minecraftforge.common.MinecraftForge;
 import org.apache.commons.io.IOUtils;
 
@@ -35,11 +35,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import scala.Option;
 
-@Architecture.Name("65C02")
-public class BitComputersArchitecture implements Architecture {
+@Architecture.Name("WDC 65C02")
+public class BitComputersLegacyArchitecture implements Architecture {
 	private final Machine machine;
 
-	private BitComputersVM vm;
+	private BitComputersLegacyVM vm;
 
 	private boolean initialized = false;
 
@@ -48,7 +48,7 @@ public class BitComputersArchitecture implements Architecture {
 	private CallSynchronizedException syncCall;
 
 	/** The constructor must have exactly this signature. */
-	public BitComputersArchitecture(Machine machine) {
+	public BitComputersLegacyArchitecture(Machine machine) {
 		this.machine = machine;
 	}
 
@@ -81,14 +81,14 @@ public class BitComputersArchitecture implements Architecture {
 	@Override
 	public boolean initialize() {
 		// Set up new VM here
-		vm = new BitComputersVM(machine);
+		vm = new BitComputersLegacyVM(machine);
 		BankSelector banksel = this.vm.machine.getBankSelector();
 		int memory = calculateMemory(this.machine.host().internalComponents());
 		vm.machine.resize(memory);
 		vm.machine.reset();
 		for (ItemStack component : machine.host().internalComponents()) {
 			if (Driver.driverFor(component) instanceof Processor) {
-				vm.cyclesPerTick = BitComputersConfig.debugCpuSlowDown ? 10 : (Driver.driverFor(component).tier(component) + 1) * BitComputersConfig.clocksPerTick;
+				vm.cyclesPerTick = BitComputersLegacyConfig.debugCpuSlowDown ? 10 : (Driver.driverFor(component).tier(component) + 1) * BitComputersLegacyConfig.clocksPerTick;
 				break;
 			}
 		}
@@ -128,8 +128,8 @@ public class BitComputersArchitecture implements Architecture {
 			return new ExecutionResult.Sleep(0);
 		} catch (CallSynchronizedException e) {
 			if (e.getCleanup() != null) {
-				if (BitComputersConfig.debugCpuTraceLog) // Exceptions thrown cause BitComputersVM to skip trace logging.
-					BitComputers.log.info("[Cpu] " + vm.machine.getCpu().getCpuState().toTraceEvent());
+				if (BitComputersLegacyConfig.debugCpuTraceLog) // Exceptions thrown cause BitComputersVM to skip trace logging.
+					BitComputersLegacy.log.info("[Cpu] " + vm.machine.getCpu().getCpuState().toTraceEvent());
 				syncCall = e;
 			}
 			return new ExecutionResult.SynchronizedCall();
@@ -224,7 +224,7 @@ public class BitComputersArchitecture implements Architecture {
 				for (int i = 0; i < mem.length; i++)
 					vm.machine.writeMem(i, mem[i]);
 			} catch (IOException e) {
-				BitComputers.log.error("Failed to decompress memory from disk.", e);
+				BitComputersLegacy.log.error("Failed to decompress memory from disk.", e);
 			}
 		}
 
@@ -267,7 +267,7 @@ public class BitComputersArchitecture implements Architecture {
 			gzos.close();
 			SaveHandler.scheduleSave(machine.host(), nbt, machine.node().address() + "_memory", baos.toByteArray());
 		} catch (IOException e) {
-			BitComputers.log.error("Failed to compress memory to disk", e);
+			BitComputersLegacy.log.error("Failed to compress memory to disk", e);
 		}
 
 		// Persist CPU

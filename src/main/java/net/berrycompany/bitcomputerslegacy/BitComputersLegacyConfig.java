@@ -1,8 +1,8 @@
-package net.berrycompany.bitcomputers;
+package net.berrycompany.bitcomputerslegacy;
 
 import net.minecraftforge.common.config.Configuration;
 
-public class BitComputersConfig {
+public class BitComputersLegacyConfig {
 
 	public static int clocksPerTick = 15000;
 

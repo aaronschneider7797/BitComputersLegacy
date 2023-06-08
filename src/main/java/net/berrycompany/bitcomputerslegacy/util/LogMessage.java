@@ -1,4 +1,4 @@
-package net.berrycompany.bitcomputers.util;
+package net.berrycompany.bitcomputerslegacy.util;
 
 import org.apache.logging.log4j.message.Message;
 import org.apache.logging.log4j.message.MessageFactory;

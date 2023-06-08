@@ -25,8 +25,8 @@ package com.loomcom.symon;
 
 import com.loomcom.symon.util.Utils;
 
-import net.berrycompany.bitcomputers.BitComputers;
-import net.berrycompany.bitcomputers.BitComputersConfig;
+import net.berrycompany.bitcomputerslegacy.BitComputersLegacy;
+import net.berrycompany.bitcomputerslegacy.BitComputersLegacyConfig;
 
 /**
  * This class provides a simulation of the WDC 65C02 CPU's state machine.
@@ -715,8 +715,8 @@ public class Cpu implements InstructionTable {
 				break;
 		}
 
-		if (BitComputersConfig.debugCpuTraceLog)
-			BitComputers.log.info("[Cpu] " + this.state.toTraceEvent());
+		if (BitComputersLegacyConfig.debugCpuTraceLog)
+			BitComputersLegacy.log.info("[Cpu] " + this.state.toTraceEvent());
 	}
 
 	private void handleBrk(int returnPc) {

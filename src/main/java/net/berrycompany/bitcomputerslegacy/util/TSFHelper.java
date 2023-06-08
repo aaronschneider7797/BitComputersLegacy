@@ -1,7 +1,7 @@
-package net.berrycompany.bitcomputers.util;
+package net.berrycompany.bitcomputerslegacy.util;
 
 import com.google.common.base.Charsets;
-import net.berrycompany.bitcomputers.BitComputers;
+import net.berrycompany.bitcomputerslegacy.BitComputersLegacy;
 import li.cil.oc.api.machine.Context;
 import li.cil.oc.api.machine.Value;
 import org.apache.commons.codec.binary.Hex;
@@ -216,7 +216,7 @@ public class TSFHelper {
 		else if (thing instanceof Value)
 			writeValue(buffer, (Value) thing, context);
 		else
-			BitComputers.log.warn("Don't know how to TSF encode a " + thing + " (" + thing.getClass().getName() + "), please report this to BitComputers's author.");
+			BitComputersLegacy.log.warn("Don't know how to TSF encode a " + thing + " (" + thing.getClass().getName() + "), please report this to BitComputers's author.");
 	}
 
 	public static void writeEnd(Queue<Byte> buffer) {

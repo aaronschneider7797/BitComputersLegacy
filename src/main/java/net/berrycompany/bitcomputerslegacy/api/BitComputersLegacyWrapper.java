@@ -1,13 +1,13 @@
-package net.berrycompany.bitcomputers.api;
+package net.berrycompany.bitcomputerslegacy.api;
 
 import li.cil.oc.api.network.Environment;
 import net.minecraft.nbt.NBTTagCompound;
 
-public abstract class BitComputersWrapper implements IBitComputersDevice {
+public abstract class BitComputersLegacyWrapper implements IBitComputersLegacyDevice {
 
 	private final Environment host;
 
-	public BitComputersWrapper(Environment host) {
+	public BitComputersLegacyWrapper(Environment host) {
 		this.host = host;
 	}
 

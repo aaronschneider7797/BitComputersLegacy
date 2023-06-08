@@ -1,4 +1,4 @@
-package net.berrycompany.bitcomputers.util;
+package net.berrycompany.bitcomputerslegacy.util;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -6,7 +6,7 @@ import java.util.Map;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
-import net.berrycompany.bitcomputers.BitComputers;
+import net.berrycompany.bitcomputerslegacy.BitComputersLegacy;
 import li.cil.oc.api.machine.Context;
 import li.cil.oc.api.machine.Value;
 import net.minecraft.nbt.NBTTagCompound;
@@ -63,7 +63,7 @@ public class ValueManager {
 				value.load(nbt.getCompoundTag("nbt" + i));
 				valuemap.put(nbt.getInteger("id" + i), value);
 			} catch (Exception e) {
-				BitComputers.log.error("Failed to restore Value from NBT", e);
+				BitComputersLegacy.log.error("Failed to restore Value from NBT", e);
 			}
 		}
 	}

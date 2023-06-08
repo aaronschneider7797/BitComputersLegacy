@@ -1,4 +1,4 @@
-package net.berrycompany.bitcomputers;
+package net.berrycompany.bitcomputerslegacy;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,14 +10,14 @@ import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import net.berrycompany.bitcomputers.util.LogMessage;
+import net.berrycompany.bitcomputerslegacy.util.LogMessage;
 import li.cil.oc.Settings;
 import li.cil.oc.api.Items;
 import li.cil.oc.api.Machine;
 import net.minecraftforge.common.config.Configuration;
 
-@Mod(modid = BitComputers.MODID, name = BitComputers.NAME, version = BitComputers.VERSION, dependencies = "required-after:opencomputers@[1.7.5,)")
-public class BitComputers {
+@Mod(modid = BitComputersLegacy.MODID, name = BitComputersLegacy.NAME, version = BitComputersLegacy.VERSION, dependencies = "required-after:opencomputers@[1.7.5,)")
+public class BitComputersLegacy {
 	public static final String MODID = "bitcomputerslegacy";
 	public static final String NAME = "BitComputers Legacy";
 	public static final String VERSION = "1.2.0";
@@ -32,8 +32,8 @@ public class BitComputers {
 		log = LogManager.getLogger(MODID, new LogMessage("BitComputers"));
 		config = new Configuration(event.getSuggestedConfigurationFile());
 
-		BitComputersConfig.loadConfig(config);
-		Machine.add(BitComputersArchitecture.class);
+		BitComputersLegacyConfig.loadConfig(config);
+		Machine.add(BitComputersLegacyArchitecture.class);
 	}
 
 	@Mod.EventHandler

@@ -1,4 +1,4 @@
-package net.berrycompany.bitcomputers.exceptions;
+package net.berrycompany.bitcomputerslegacy.exceptions;
 
 import li.cil.oc.api.machine.Context;
 

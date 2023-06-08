@@ -1,20 +1,20 @@
-package net.berrycompany.bitcomputers.wrapper;
+package net.berrycompany.bitcomputerslegacy.wrapper;
 
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 
-import net.berrycompany.bitcomputers.BitComputers;
-import net.berrycompany.bitcomputers.BitComputersConfig;
-import net.berrycompany.bitcomputers.util.TSFHelper;
-import net.berrycompany.bitcomputers.util.UUIDHelper;
+import net.berrycompany.bitcomputerslegacy.BitComputersLegacy;
+import net.berrycompany.bitcomputerslegacy.BitComputersLegacyConfig;
+import net.berrycompany.bitcomputerslegacy.util.TSFHelper;
+import net.berrycompany.bitcomputerslegacy.util.UUIDHelper;
 import org.apache.commons.lang3.ArrayUtils;
 
-import net.berrycompany.bitcomputers.BitComputersArchitecture;
-import net.berrycompany.bitcomputers.api.BitComputersWrapper;
-import net.berrycompany.bitcomputers.exceptions.CallSynchronizedException;
-import net.berrycompany.bitcomputers.exceptions.CallSynchronizedException.Cleanup;
+import net.berrycompany.bitcomputerslegacy.BitComputersLegacyArchitecture;
+import net.berrycompany.bitcomputerslegacy.api.BitComputersLegacyWrapper;
+import net.berrycompany.bitcomputerslegacy.exceptions.CallSynchronizedException;
+import net.berrycompany.bitcomputerslegacy.exceptions.CallSynchronizedException.Cleanup;
 import li.cil.oc.api.driver.DeviceInfo;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
@@ -24,7 +24,7 @@ import li.cil.oc.api.network.Environment;
 import net.minecraft.nbt.NBTTagCompound;
 import li.cil.oc.api.network.Component;
 
-public class GenericDevice extends BitComputersWrapper {
+public class GenericDevice extends BitComputersLegacyWrapper {
 
 	private final Queue<Byte> inputbuf = new LinkedList<>();
 	private final Queue<Byte> outputbuf = new LinkedList<>();
@@ -37,16 +37,16 @@ public class GenericDevice extends BitComputersWrapper {
 		@Override
 		public void run(Object[] results, Context context) {
 			status = 0;
-			if (BitComputersConfig.debugComponentCalls)
-				BitComputers.log.info("[Generic] (" + host().node().address() + ") Results: " + Arrays.deepToString(results));
+			if (BitComputersLegacyConfig.debugComponentCalls)
+				BitComputersLegacy.log.info("[Generic] (" + host().node().address() + ") Results: " + Arrays.deepToString(results));
 			if (results != null) {
 				TSFHelper.writeArray(outputbuf, results, context, flag);
 			}
 		}
 		@Override
 		public void error(Exception e) {
-			if (BitComputersConfig.debugComponentCalls)
-				BitComputers.log.info("[Generic] (" + host().node().address() + ") Error: ", e);
+			if (BitComputersLegacyConfig.debugComponentCalls)
+				BitComputersLegacy.log.info("[Generic] (" + host().node().address() + ") Error: ", e);
 			if (e instanceof IllegalArgumentException) {
 				status = 2;
 			} else {
@@ -116,15 +116,15 @@ public class GenericDevice extends BitComputersWrapper {
 			switch (data) {
 			case 0: // invoke
 				tsfdata = TSFHelper.readArray(inputbuf, context, flag);
-				if (BitComputersConfig.debugComponentCalls)
-					BitComputers.log.info("[Generic] (" + host().node().address() + ") Invoke: " + Arrays.deepToString(tsfdata));
+				if (BitComputersLegacyConfig.debugComponentCalls)
+					BitComputersLegacy.log.info("[Generic] (" + host().node().address() + ") Invoke: " + Arrays.deepToString(tsfdata));
 				if (tsfdata == null || tsfdata.length < 1) {
 					status = 3;
 					break;
 				}
 				try {
 					Object[] results;
-					BitComputersArchitecture bitComputers = ((BitComputersArchitecture) ((Machine) context).architecture());
+					BitComputersLegacyArchitecture bitComputers = ((BitComputersLegacyArchitecture) ((Machine) context).architecture());
 					if (tsfdata[0] instanceof String) {
 						Object[] args = Arrays.copyOfRange(tsfdata, 1, tsfdata.length);
 						results = bitComputers.invoke(host().node().address(), (String) tsfdata[0], args);

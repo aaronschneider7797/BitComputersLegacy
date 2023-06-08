@@ -1,8 +1,8 @@
-package net.berrycompany.bitcomputers.api;
+package net.berrycompany.bitcomputerslegacy.api;
 
 import li.cil.oc.api.machine.Context;
 
-public interface IBitComputersDevice {
+public interface IBitComputersLegacyDevice {
 
 	int length();
 

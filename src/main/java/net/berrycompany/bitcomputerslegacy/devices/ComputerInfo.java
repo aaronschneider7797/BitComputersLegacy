@@ -1,9 +1,9 @@
-package net.berrycompany.bitcomputers.devices;
+package net.berrycompany.bitcomputerslegacy.devices;
 
 import com.loomcom.symon.Bus;
 import com.loomcom.symon.devices.Device;
-import net.berrycompany.bitcomputers.BitComputers;
-import net.berrycompany.bitcomputers.util.UUIDHelper;
+import net.berrycompany.bitcomputerslegacy.BitComputersLegacy;
+import net.berrycompany.bitcomputerslegacy.util.UUIDHelper;
 import li.cil.oc.api.machine.Machine;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -56,7 +56,7 @@ public class ComputerInfo extends Device {
 		computerUUID = UUIDHelper.encodeUUID(machine.node().address());
 		String tmpfs_address = machine.tmpAddress();
 		if(tmpfs_address == null) {
-			BitComputers.log.warn("Failed to create tmpfs");
+			BitComputersLegacy.log.warn("Failed to create tmpfs");
 		} else {
 			tmpfsUUID = UUIDHelper.encodeUUID(tmpfs_address);
 		}

@@ -1,4 +1,4 @@
-package net.berrycompany.bitcomputers.util;
+package net.berrycompany.bitcomputerslegacy.util;
 
 import java.util.LinkedList;
 import java.util.Map;

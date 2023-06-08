@@ -15,7 +15,7 @@ apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
 version = "1.12.2-1.2.0"
-group = "net.berrycompany.bitcomputers"
+group = "net.berrycompany.bitcomputerslegacy"
 archivesBaseName = "BitComputersLegacy"
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = "1.8"

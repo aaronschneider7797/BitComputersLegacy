@@ -1,4 +1,4 @@
-package net.berrycompany.bitcomputers.devices;
+package net.berrycompany.bitcomputerslegacy.devices;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -13,8 +13,8 @@ import com.google.common.collect.EvictingQueue;
 import com.loomcom.symon.Bus;
 import com.loomcom.symon.Cpu;
 import com.loomcom.symon.devices.Device;
-import net.berrycompany.bitcomputers.util.ConsoleDriver;
-import net.berrycompany.bitcomputers.util.TSFHelper;
+import net.berrycompany.bitcomputerslegacy.util.ConsoleDriver;
+import net.berrycompany.bitcomputerslegacy.util.TSFHelper;
 import li.cil.oc.api.machine.Context;
 import li.cil.oc.api.machine.Machine;
 import li.cil.oc.api.machine.Signal;

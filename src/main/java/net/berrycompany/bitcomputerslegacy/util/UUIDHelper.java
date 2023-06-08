@@ -1,4 +1,4 @@
-package net.berrycompany.bitcomputers.util;
+package net.berrycompany.bitcomputerslegacy.util;
 
 import java.util.UUID;
 import java.util.regex.Pattern;

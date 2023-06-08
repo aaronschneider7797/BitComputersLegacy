@@ -1,4 +1,4 @@
-package net.berrycompany.bitcomputers.devices;
+package net.berrycompany.bitcomputerslegacy.devices;
 
 import java.util.Map;
 

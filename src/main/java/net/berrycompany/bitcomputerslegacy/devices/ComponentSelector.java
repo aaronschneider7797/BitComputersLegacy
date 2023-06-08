@@ -1,4 +1,4 @@
-package net.berrycompany.bitcomputers.devices;
+package net.berrycompany.bitcomputerslegacy.devices;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -6,12 +6,12 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.UUID;
 
-import net.berrycompany.bitcomputers.api.IBitComputersDevice;
-import net.berrycompany.bitcomputers.api.BitComputersWrapper;
-import net.berrycompany.bitcomputers.api.WrapperRegistry;
-import net.berrycompany.bitcomputers.util.TSFHelper;
-import net.berrycompany.bitcomputers.util.ValueManager;
-import net.berrycompany.bitcomputers.wrapper.GenericDevice;
+import net.berrycompany.bitcomputerslegacy.api.IBitComputersLegacyDevice;
+import net.berrycompany.bitcomputerslegacy.api.BitComputersLegacyWrapper;
+import net.berrycompany.bitcomputerslegacy.api.WrapperRegistry;
+import net.berrycompany.bitcomputerslegacy.util.TSFHelper;
+import net.berrycompany.bitcomputerslegacy.util.ValueManager;
+import net.berrycompany.bitcomputerslegacy.wrapper.GenericDevice;
 import org.apache.commons.lang3.ArrayUtils;
 
 import com.loomcom.symon.Bus;
@@ -34,7 +34,7 @@ public class ComponentSelector extends Device {
 
 	private final Queue<Byte> inputbuf = new LinkedList<>();
 	private final Queue<Byte> outputbuf = new LinkedList<>();
-	private final IBitComputersDevice[] components = new IBitComputersDevice[64];
+	private final IBitComputersLegacyDevice[] components = new IBitComputersLegacyDevice[64];
 
 	private NBTTagCompound[] delayConnectNBT;
 
@@ -55,8 +55,8 @@ public class ComponentSelector extends Device {
 			for (int i = 0; i < components.length; i++) {
 				if (delayConnectNBT[i] != null) {
 					mapComponent(delayConnectNBT[i].getString("_address"), i, delayConnectNBT[i].getBoolean("_generic"));
-					if (components[i] instanceof BitComputersWrapper)
-						((BitComputersWrapper) components[i]).load(delayConnectNBT[i]);
+					if (components[i] instanceof BitComputersLegacyWrapper)
+						((BitComputersLegacyWrapper) components[i]).load(delayConnectNBT[i]);
 				}
 			}
 			delayConnectNBT = null;
@@ -64,11 +64,11 @@ public class ComponentSelector extends Device {
 	}
 
 	private Environment getEnvironment(int index) {
-		IBitComputersDevice component = components[index];
+		IBitComputersLegacyDevice component = components[index];
 		if (component instanceof Environment)
 			return (Environment) component;
-		else if (component instanceof BitComputersWrapper)
-			return ((BitComputersWrapper) component).host();
+		else if (component instanceof BitComputersLegacyWrapper)
+			return ((BitComputersLegacyWrapper) component).host();
 		return null;
 	}
 
@@ -99,11 +99,11 @@ public class ComponentSelector extends Device {
 			components[select] = new GenericDevice(host);
 			return true;
 		}
-		if (host instanceof IBitComputersDevice) {
-			components[select] = (IBitComputersDevice) host;
+		if (host instanceof IBitComputersLegacyDevice) {
+			components[select] = (IBitComputersLegacyDevice) host;
 			return true;
 		}
-		Class<? extends BitComputersWrapper> wrapper = WrapperRegistry.getWrapper(host.getClass());
+		Class<? extends BitComputersLegacyWrapper> wrapper = WrapperRegistry.getWrapper(host.getClass());
 		if (wrapper != null) {
 			try {
 				components[select] = wrapper.getDeclaredConstructor(Environment.class).newInstance(host);
@@ -306,12 +306,12 @@ public class ComponentSelector extends Device {
 		compTag.setByteArray("input", ArrayUtils.toPrimitive(inputbuf.toArray(new Byte[0])));
 		compTag.setByteArray("output", ArrayUtils.toPrimitive(outputbuf.toArray(new Byte[0])));
 		for (int i = 0; i < components.length; i++) {
-			IBitComputersDevice component = components[i];
+			IBitComputersLegacyDevice component = components[i];
 			Environment environment = getEnvironment(i);
 			if (component != null && environment != null) {
 				NBTTagCompound deviceTag = new NBTTagCompound();
-				if (component instanceof BitComputersWrapper)
-					((BitComputersWrapper) component).save(nbt);
+				if (component instanceof BitComputersLegacyWrapper)
+					((BitComputersLegacyWrapper) component).save(nbt);
 				deviceTag.setString("_address", environment.node().address());
 				deviceTag.setBoolean("_generic", !(component instanceof GenericDevice));
 				compTag.setTag("comp" + i, deviceTag);
@@ -330,7 +330,7 @@ public class ComponentSelector extends Device {
 		return bankMask;
 	}
 
-	public IBitComputersDevice getComponent(int index) {
+	public IBitComputersLegacyDevice getComponent(int index) {
 		return components[index & 0x3F];
 	}
 }

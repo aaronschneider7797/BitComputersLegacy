@@ -22,7 +22,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.berrycompany.bitcomputers;
+package net.berrycompany.bitcomputerslegacy;
 
 import li.cil.oc.api.machine.Context;
 
@@ -31,16 +31,16 @@ import java.util.ArrayList;
 import com.loomcom.symon.Bus;
 import com.loomcom.symon.Cpu;
 
-import net.berrycompany.bitcomputers.devices.BootROM;
-import net.berrycompany.bitcomputers.devices.ComponentSelector;
-import net.berrycompany.bitcomputers.devices.ComputerInfo;
-import net.berrycompany.bitcomputers.devices.CopyEngine;
-import net.berrycompany.bitcomputers.devices.RTC;
-import net.berrycompany.bitcomputers.devices.BankSelector;
-import net.berrycompany.bitcomputers.devices.GeneralIO;
+import net.berrycompany.bitcomputerslegacy.devices.BootROM;
+import net.berrycompany.bitcomputerslegacy.devices.ComponentSelector;
+import net.berrycompany.bitcomputerslegacy.devices.ComputerInfo;
+import net.berrycompany.bitcomputerslegacy.devices.CopyEngine;
+import net.berrycompany.bitcomputerslegacy.devices.RTC;
+import net.berrycompany.bitcomputerslegacy.devices.BankSelector;
+import net.berrycompany.bitcomputerslegacy.devices.GeneralIO;
 
 @SuppressWarnings("unused")
-public class BitComputersMachine {
+public class BitComputersLegacyMachine {
 
 	// Constants used by the simulated system. These define the memory map.
 
@@ -81,7 +81,7 @@ public class BitComputersMachine {
 	// The machine memory
 	private final ArrayList<Byte> mem = new ArrayList<>();
 
-	public BitComputersMachine(Context context) {
+	public BitComputersLegacyMachine(Context context) {
 		this.context = context;
 		this.bus = new Bus();
 		this.cpu = new Cpu();

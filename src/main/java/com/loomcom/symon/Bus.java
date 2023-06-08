@@ -27,11 +27,11 @@ import java.util.ArrayList;
 
 import com.loomcom.symon.devices.Device;
 
-import net.berrycompany.bitcomputers.BitComputers;
-import net.berrycompany.bitcomputers.BitComputersConfig;
-import net.berrycompany.bitcomputers.BitComputersMachine;
-import net.berrycompany.bitcomputers.api.IBitComputersDevice;
-import net.berrycompany.bitcomputers.devices.BankSelector;
+import net.berrycompany.bitcomputerslegacy.BitComputersLegacy;
+import net.berrycompany.bitcomputerslegacy.BitComputersLegacyConfig;
+import net.berrycompany.bitcomputerslegacy.BitComputersLegacyMachine;
+import net.berrycompany.bitcomputerslegacy.api.IBitComputersLegacyDevice;
+import net.berrycompany.bitcomputerslegacy.devices.BankSelector;
 import li.cil.oc.api.machine.Signal;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -46,7 +46,7 @@ public class Bus {
 	private static final int EEPROM_DATA_BASE = 0xEF00;
 	private static final int EEPROM_CODE_BASE = 0xF000;
 
-	private BitComputersMachine machine;
+	private BitComputersLegacyMachine machine;
 	private final ArrayList<Device> deviceList = new ArrayList<>();
 
 	public int read(int address) {
@@ -55,20 +55,20 @@ public class Bus {
 			int select = address >>> 12;
 			int bankMask = machine.getComponentSelector().getMask();
 			if (select == 15 && (bankMask & (1 << 4)) == 0) {
-				if (BitComputersConfig.debugEEPROMReads)
-					BitComputers.log.info(String.format("[Bus] EEPROM Read $%04X", address));
+				if (BitComputersLegacyConfig.debugEEPROMReads)
+					BitComputersLegacy.log.info(String.format("[Bus] EEPROM Read $%04X", address));
 				return machine.getEEPROM().read(address - EEPROM_DATA_BASE) & 0xFF; // This reads EEPROM code but offset must be data
 			} else if (select >= 10 && select <= 13 && (bankMask & (1 << (select - 10))) == 0) {
-				if (BitComputersConfig.debugComponentReads)
-					BitComputers.log.info(String.format("[Bus] Component Read $%04X", address));
+				if (BitComputersLegacyConfig.debugComponentReads)
+					BitComputersLegacy.log.info(String.format("[Bus] Component Read $%04X", address));
 				int index = address >>> 8;
 				index = (0xD0 - (index & 0xF0)) | (index & 0x0F);
-				IBitComputersDevice device = machine.getComponentSelector().getComponent(index);
+				IBitComputersLegacyDevice device = machine.getComponentSelector().getComponent(index);
 				if (device != null)
 					return device.read(machine.getContext(), address & 0xFF) & 0xFF;
 			} else {
-				if (BitComputersConfig.debugMemoryReads)
-					BitComputers.log.info(String.format("[Bus] Memory Read $%04X", address));
+				if (BitComputersLegacyConfig.debugMemoryReads)
+					BitComputersLegacy.log.info(String.format("[Bus] Memory Read $%04X", address));
 				BankSelector banksel = machine.getBankSelector();
 				int memaddr = (banksel.bankSelect[select] << 12) | (address & 0xFFF);
 				if (memaddr < machine.getMemsize())
@@ -76,8 +76,8 @@ public class Bus {
 			}
 			return 0;
 		}
-		if (BitComputersConfig.debugDeviceReads)
-			BitComputers.log.info(String.format("[Bus] Device Read $%04X", address));
+		if (BitComputersLegacyConfig.debugDeviceReads)
+			BitComputersLegacy.log.info(String.format("[Bus] Device Read $%04X", address));
 		for (Device device : deviceList) {
 			MemoryRange memoryRange = device.getMemoryRange();
 			if (address >= memoryRange.startAddress && address <= memoryRange.endAddress) {
@@ -94,20 +94,20 @@ public class Bus {
 			int select = address >>> 12;
 			int bankMask = machine.getComponentSelector().getMask();
 			if (select == 15 && (bankMask & (1 << 4)) == 0) {
-				if (BitComputersConfig.debugEEPROMWrites)
-					BitComputers.log.info(String.format("[Bus] EEPROM Write $%04X = 0x%02X", address, data));
+				if (BitComputersLegacyConfig.debugEEPROMWrites)
+					BitComputersLegacy.log.info(String.format("[Bus] EEPROM Write $%04X = 0x%02X", address, data));
 				machine.getEEPROM().write(address - EEPROM_DATA_BASE, data); // This reads eeprom code but offset must be data
 			} else if (select >= 10 && select <= 13 && (bankMask & (1 << (select - 10))) == 0) {
-				if (BitComputersConfig.debugComponentWrites)
-					BitComputers.log.info(String.format("[Bus] Component Write $%04X = 0x%02X", address, data));
+				if (BitComputersLegacyConfig.debugComponentWrites)
+					BitComputersLegacy.log.info(String.format("[Bus] Component Write $%04X = 0x%02X", address, data));
 				int index = address >>> 8;
 				index = (0xD0 - (index & 0xF0)) | (index & 0x0F);
-				IBitComputersDevice device = machine.getComponentSelector().getComponent(index);
+				IBitComputersLegacyDevice device = machine.getComponentSelector().getComponent(index);
 				if (device != null)
 					device.write(machine.getContext(), address & 0xFF, data);
 			} else {
-				if (BitComputersConfig.debugMemoryWrites)
-					BitComputers.log.info(String.format("[Bus] Memory Write $%04X = 0x%02X", address, data));
+				if (BitComputersLegacyConfig.debugMemoryWrites)
+					BitComputersLegacy.log.info(String.format("[Bus] Memory Write $%04X = 0x%02X", address, data));
 				BankSelector banksel = machine.getBankSelector();
 				int memaddr = (banksel.bankSelect[select] << 12) | (address & 0xFFF);
 				if (memaddr < machine.getMemsize())
@@ -115,8 +115,8 @@ public class Bus {
 			}
 			return;
 		}
-		if (BitComputersConfig.debugDeviceWrites)
-			BitComputers.log.info(String.format("[Bus] Device Write $%04X = 0x%02X", address, data));
+		if (BitComputersLegacyConfig.debugDeviceWrites)
+			BitComputersLegacy.log.info(String.format("[Bus] Device Write $%04X = 0x%02X", address, data));
 		for (Device device : deviceList) {
 			MemoryRange memoryRange = device.getMemoryRange();
 			if (address >= memoryRange.startAddress && address <= memoryRange.endAddress) {
@@ -157,11 +157,11 @@ public class Bus {
 		machine.getCpu().clearNmi();
 	}
 
-	public BitComputersMachine getMachine() {
+	public BitComputersLegacyMachine getMachine() {
 		return machine;
 	}
 
-	public void setMachine(BitComputersMachine machine) {
+	public void setMachine(BitComputersLegacyMachine machine) {
 		this.machine = machine;
 	}
 

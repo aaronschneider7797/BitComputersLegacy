@@ -1,4 +1,4 @@
-package net.berrycompany.bitcomputers;
+package net.berrycompany.bitcomputerslegacy;
 
 import com.loomcom.symon.Cpu;
 
@@ -7,18 +7,18 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
-public class BitComputersVM {
+public class BitComputersLegacyVM {
 	// The simulated machine
-	public BitComputersMachine machine;
+	public BitComputersLegacyMachine machine;
 
 	// Allocated cycles per tick
 	public int cyclesPerTick;
 
-	public BitComputersVM(Context context) {
+	public BitComputersLegacyVM(Context context) {
 		super();
 		MinecraftForge.EVENT_BUS.register(this);
 		try {
-			machine = new BitComputersMachine(context);
+			machine = new BitComputersLegacyMachine(context);
 			if (context.node().network() == null) {
 				// Loading from NBT
 				return;
