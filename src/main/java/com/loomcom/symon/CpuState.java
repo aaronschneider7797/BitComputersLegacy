@@ -109,6 +109,7 @@ public class CpuState {
 	 * @return The value of the Process Status Register, as a byte.
 	 */
 	public int getStatusFlag() {
+		int status = 0x00;
 		if (carryFlag) {
 			status |= Cpu.P_CARRY;
 		}
