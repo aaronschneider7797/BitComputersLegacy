@@ -51,16 +51,16 @@ public class BitComputers {
 			log.error("Please reconfigure OpenComputers or you will run into issues.");
 
 		// Register EEPROM
-		InputStream romImage = this.getClass().getResourceAsStream("/assets/" + MODID + "/roms/boot.rom");
-		if (romImage != null) {
+		InputStream bootRom = this.getClass().getResourceAsStream("/assets/" + MODID + "/roms/boot.rom");
+		if (bootRom != null) {
 			try {
-				byte[] code = IOUtils.toByteArray(romImage);
-				Items.registerEEPROM("EEPROM (Thistle)", code, null, false);
+				byte[] code = IOUtils.toByteArray(bootRom);
+				Items.registerEEPROM("EEPROM (65C02 BIOS)", code, null, false);
 			} catch (IOException e) {
 				log.warn("Failed reading boot.rom, no custom EEPROMs available");
 				e.printStackTrace();
 			} finally {
-				IOUtils.closeQuietly(romImage);
+				IOUtils.closeQuietly(bootRom);
 			}
 		} else {
 			log.warn("boot.rom could not be located, no custom EEPROMs available");
