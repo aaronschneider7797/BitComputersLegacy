@@ -102,7 +102,7 @@ public class CpuState {
 	 */
 	public String toTraceEvent() {
 		String opcode = Cpu.disassembleOp(ir, args);
-		return getInstructionByteStatus() + "  " + String.format("%-14s", opcode) + "A:" + Utils.byteToHex(a) + " " + "X:" + Utils.byteToHex(x) + " " + "Y:" + Utils.byteToHex(y) + " " + "F:" + Utils.byteToHex(getStatusFlag()) + " " + "S:1" + Utils.byteToHex(sp) + " " + getProcessorStatusString();
+		return getInstructionByteStatus() + "  " + String.format("%-14s", opcode) + "A:" + Utils.byteToHex(a) + " " + "B:" + Utils.byteToHex(b) + " "  + "X:" + Utils.byteToHex(x) + " " + "Y:" + Utils.byteToHex(y) + "Z:" + Utils.byteToHex(z) + " "  + " " + "F:" + Utils.byteToHex(getStatusFlag()) + " " + "S:1" + Utils.byteToHex(sp) + " " + getProcessorStatusString();
 	}
 
 	/**
