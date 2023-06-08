@@ -41,7 +41,7 @@ public class Cpu implements InstructionTable {
 	public static final int P_IRQ_DISABLE = 0x04;
 	public static final int P_DECIMAL = 0x08;
 	public static final int P_BREAK = 0x10;
-	// Bit 5 is always '1'
+	public static final int P_EXTEND = 0x20;
 	public static final int P_OVERFLOW = 0x40;
 	public static final int P_NEGATIVE = 0x80;
 

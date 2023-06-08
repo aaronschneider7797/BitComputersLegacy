@@ -125,6 +125,9 @@ public class CpuState {
 		if (breakFlag) {
 			status |= Cpu.P_BREAK;
 		}
+		if (extendFlag) {
+			status |= Cpu.P_EXTEND;
+		}
 		if (overflowFlag) {
 			status |= Cpu.P_OVERFLOW;
 		}
