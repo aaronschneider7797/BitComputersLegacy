@@ -1,9 +1,9 @@
 BitComputers
 ================
 
-A 65CE02 arcitecture for OpenComputers.
+A 65CE02 arcitecture for OpenComputers. Drived from Thistle. Created by [gamax92](https://github.com/gamax92).
 
-Uses a heavily modified/converted [Symon](https://github.com/sethm/symon) core by [Seth J. Morabito](http://loomcom.com/)
+Uses a heavily modified/converted [Symon](https://github.com/sethm/symon) core by [Seth J. Morabito](http://loomcom.com/).
 
 Features:
 * Fully persistable
