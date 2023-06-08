@@ -85,7 +85,7 @@ public class Cpu implements InstructionTable {
 		/* TODO: In reality, the stack pointer could be anywhere
 		   on the stack after reset. This non-deterministic behavior might be
 		   worth while to simulate. */
-		state.sp = 0xff;
+		state.sp = 0xffff;
 
 		// Set the PC to the address stored in the reset vector
 		state.pc = Utils.address(bus.read(RST_VECTOR_L), bus.read(RST_VECTOR_H));
@@ -113,6 +113,7 @@ public class Cpu implements InstructionTable {
 
 		// Reset registers.
 		state.a = 0;
+		state.b = 0;
 		state.x = 0;
 		state.y = 0;
 		state.z = 0;
@@ -1335,7 +1336,7 @@ public class Cpu implements InstructionTable {
 	}
 
 	/**
-	 * @return the extend flag
+	 * @return the Extend Flag
 	 */
 	public boolean getExtendFlag() {
 		return state.extendFlag;
