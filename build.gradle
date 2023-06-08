@@ -16,7 +16,7 @@ apply plugin: 'maven-publish'
 
 version = "1.12.2-1.2.0"
 group = "net.berrycompany.bitcomputers"
-archivesBaseName = "BitComputers"
+archivesBaseName = "BitComputersLegacy"
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = "1.8"
 
@@ -55,7 +55,7 @@ dependencies {
 jar {
     manifest {
         attributes([
-                "Specification-Title": "BitComputers",
+                "Specification-Title": "BitComputers Legacy",
                 "Specification-Vendor": "gamax92",
                 "Specification-Version": project.version,
                 "Implementation-Title": project.name,
