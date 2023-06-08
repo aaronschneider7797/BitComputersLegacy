@@ -209,7 +209,7 @@ public class Cpu implements InstructionTable {
 			effectiveAddress = (Utils.address(state.args[0], state.args[1]) + state.y) & 0xffff;
 			break;
 		case SAY: // Stack Relative,Y
-			tmp = state.args[1] + state.sp;
+			tmp = state.args[1] + ((state.sp >> 8) & 0xffff);
 			effectiveAddress = (Utils.address(state.args[0], tmp) + state.y) & 0xffff;
 			break;
 		case XIN: // (Zero Page,X)
@@ -868,7 +868,7 @@ public class Cpu implements InstructionTable {
 			}
 			break;
 		case 0x5b: // TAB - Transfer Accumulator to Base Page - Implied
-			state.b = state.a;
+			state.b = state.a << 8;
 			setArithmeticFlags(state.b);
 			break;
 		case 0x5c: // AUG - Augment - Implied
@@ -894,7 +894,7 @@ public class Cpu implements InstructionTable {
 			}
 			break;
 		case 0x7b: // TBA - Transfer Base Page to Accumulator - Implied
-			state.a = state.b;
+			state.a = state.b >> 8;
 			setArithmeticFlags(state.a);
 			break;
 		case 0x83: // BRA - Branch Always - Relative (word)
@@ -950,7 +950,6 @@ public class Cpu implements InstructionTable {
 
 		/* Unimplemented Instructions ****************************************/
 		default:
-			setDeadState();
 			break;
 		}
 
