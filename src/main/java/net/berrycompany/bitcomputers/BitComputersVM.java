@@ -25,7 +25,7 @@ public class BitComputersVM {
 			}
 			machine.getCpu().reset();
 		} catch (Exception e) {
-			BitComputers.log.warn("Failed to setup BitComputers", e);
+			throw new RuntimeException("Failed to setup BitComputers", e);
 		}
 	}
 
